@@ -1,51 +1,33 @@
-var gulp = require('gulp'),
-    plumber = require('gulp-plumber'),
-    rename = require('gulp-rename');
-var coffee = require('gulp-coffee');
-var jshint = require('gulp-jshint');
-var concat = require('gulp-concat');
-var babel = require('gulp-babel');
-var uglify = require('gulp-uglify');
-var browserSync = require('browser-sync');
+'use strict';
 
-var SOURCE = 'src/scripts';
-var DEST = 'dist/scripts';
-var OUTPUT_FILE = 'main.js';
-var SERVER_BASE_DIR = './';
-var WATCH_FILE_EXTENSIONS = ['*.html'];
+var gulp = require('gulp');
+var eslint = require('gulp-eslint');
+var excludeGitignore = require('gulp-exclude-gitignore');
+var mocha = require('gulp-mocha');
+var istanbul = require('gulp-istanbul');
+var plumber = require('gulp-plumber');
 
-gulp.task('browser-sync', function() {
-  browserSync({
-    server: {
-      baseDir: SERVER_BASE_DIR
-    }
-  });
+gulp.task('static', function() {
+    return gulp.src('**/*.js')
+        .pipe(excludeGitignore())
+        .pipe(eslint())
+        .pipe(eslint.format())
+        .pipe(eslint.failAfterError());
 });
 
-gulp.task('bs-reload', function() {
-  browserSync.reload();
+gulp.task('test', function(cb) {
+    var mochaErr;
+
+    gulp.src('test/**/*.js')
+        .pipe(plumber())
+        .pipe(mocha({reporter: 'spec'}))
+        .on('error', function(err) {
+            mochaErr = err;
+        })
+        .pipe(istanbul.writeReports())
+        .on('end', function() {
+            cb(mochaErr);
+        });
 });
 
-gulp.task('scripts', function() {
-  return gulp.src(SOURCE + '/**/*.coffee')
-    .pipe(plumber({
-      errorHandler: function(error) {
-        console.log(error.message);
-        this.emit('end');
-    }}))
-    .pipe(coffee({bare: true}))
-    .pipe(jshint())
-    .pipe(jshint.reporter('default'))
-    .pipe(concat(OUTPUT_FILE))
-    .pipe(babel())
-    .pipe(gulp.dest(DEST + '/'))
-    .pipe(rename({suffix: '.min'}))
-    .pipe(uglify())
-    .pipe(gulp.dest(DEST + '/'))
-    .pipe(browserSync.reload({stream:true}))
-});
-
-gulp.task('default', ['browser-sync'], function() {
-  gulp.watch(SOURCE + '/**/*.coffee', ['scripts']);
-  gulp.watch(WATCH_FILE_EXTENSIONS, ['bs-reload']);
-});
+gulp.task('default', ['static', 'test']);
