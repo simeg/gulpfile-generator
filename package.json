@@ -1,0 +1,11 @@
+{
+  "name": "gulp-generator",
+  "version": "0.0.0",
+  "description": "A generator for Gulp configuration",
+  "author": "Simon Egersand <s.egersand@gmail.com>",
+  "license": "MIT",
+  "preferGlobal": true,
+  "bin": {
+    "gulp-generator": "source/cli.js"
+  }
+}
