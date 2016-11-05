@@ -1,3 +1,6 @@
+/*eslint-disable quotes */
+'use strict';
+
 var fs = require('fs');
 
 module.exports = {
@@ -24,7 +27,7 @@ module.exports = {
         if (jsOptions && jsOptions.length)
             content += this.getScriptsTask(jsOptions, source, dest);
 
-        content += this.getDefaultTask(jsOptions, source);
+        content += this.getDefaultTask(jsOptions);
 
         this.writeToFile('gulpfile.js', content);
     },
@@ -74,7 +77,7 @@ module.exports = {
         // Add gulp pipeline tasks
         for (var j = 0; j < options.length; j++) {
             var option = options[j];
-            var gulpCode = this.getJsOptionCode(option, source, dest);
+            var gulpCode = this.getJsOptionCode(option, dest);
             if (gulpCode)
                 content += i + i + gulpCode + "\n";
 
@@ -84,79 +87,80 @@ module.exports = {
 
         return content;
     },
-    getDefaultTask: function(options, source) {
+    getDefaultTask: function(options) {
         var isCoffee = (options.indexOf('coffee') !== -1);
         var isDevServer = (options.indexOf('browserSync') !== -1);
         var scriptExtension = (isCoffee ? '.coffee' : '.js');
 
         var indentationBase = '  ';
         var i = indentationBase;
-        return "gulp.task('default', " + (isDevServer ? "['browser-sync'], " : '') + "function() {\n" +
+        return (
+            "gulp.task('default', " + (isDevServer ? "['browser-sync'], " : '') + "function() {\n" +
             i + "gulp.watch(SOURCE + '/**/*" + scriptExtension + "', ['scripts']);\n" +
             (isDevServer ? (i + "gulp.watch(WATCH_FILE_EXTENSIONS, ['bs-reload']);\n") : '') +
-            "});\n";
+            "});\n");
     },
     getPath: function (name) {
         switch (name) {
-            case 'babel':
-                return 'gulp-babel';
-            case 'browserSync':
-                return 'browser-sync';
-            case 'coffee':
-                return 'gulp-coffee';
-            case 'concat':
-                return 'gulp-concat';
-            case 'jshint':
-                return 'gulp-jshint';
-            case 'uglify':
-                return 'gulp-uglify';
-            default:
-                return null;
+        case 'babel':
+            return 'gulp-babel';
+        case 'browserSync':
+            return 'browser-sync';
+        case 'coffee':
+            return 'gulp-coffee';
+        case 'concat':
+            return 'gulp-concat';
+        case 'jshint':
+            return 'gulp-jshint';
+        case 'uglify':
+            return 'gulp-uglify';
+        default:
+            return null;
         }
     },
-    getJsOptionCode: function(name, source, dest) {
+    getJsOptionCode: function(name) {
         switch (name) {
-            case 'babel':
-                return ".pipe(babel())";
-            case 'browserSync':
-                return ".pipe(browserSync.reload({stream:true}))";
-            case 'coffee':
-                return ".pipe(coffee({bare: true}))";
-            case 'concat':
-                return ".pipe(concat(OUTPUT_FILE))";
-            case 'dest':
-                return ".pipe(gulp.dest(DEST + '/'))";
-            case 'jshint':
-                return ".pipe(jshint())\n" +
-                    "    .pipe(jshint.reporter('default'))";
-            case 'uglify':
-                return ".pipe(gulp.dest(DEST + '/'))\n" +
-                    "    .pipe(rename({suffix: '.min'}))\n" +
-                    "    .pipe(uglify())";
-            default:
-                console.warn('Option [' + name + '] is not a valid option');
-                return null;
+        case 'babel':
+            return ".pipe(babel())";
+        case 'browserSync':
+            return ".pipe(browserSync.reload({stream:true}))";
+        case 'coffee':
+            return ".pipe(coffee({bare: true}))";
+        case 'concat':
+            return ".pipe(concat(OUTPUT_FILE))";
+        case 'dest':
+            return ".pipe(gulp.dest(DEST + '/'))";
+        case 'jshint':
+            return ".pipe(jshint())\n" +
+                "    .pipe(jshint.reporter('default'))";
+        case 'uglify':
+            return ".pipe(gulp.dest(DEST + '/'))\n" +
+                "    .pipe(rename({suffix: '.min'}))\n" +
+                "    .pipe(uglify())";
+        default:
+            console.warn('Option [' + name + '] is not a valid option');
+            return null;
         }
     },
     getCustomCode: function(type) {
         var indentationBase = '  ';
         var i = indentationBase;
         switch (type) {
-            case 'browserSync':
-                return "gulp.task('browser-sync', function() {\n" +
-                    i + "browserSync({\n" + i + i + "server: {\n" +
-                    i + i + i + "baseDir: SERVER_BASE_DIR\n" + i + i + "}\n" +
-                    i + "});\n" + "});\n\n" +
-                    "gulp.task('bs-reload', function() {\n" +
-                    i + "browserSync.reload();\n" + "});\n";
-            default:
-                console.warn('Type [' + type + '] is not a valid type');
-                return null;
+        case 'browserSync':
+            return "gulp.task('browser-sync', function() {\n" +
+                i + "browserSync({\n" + i + i + "server: {\n" +
+                i + i + i + "baseDir: SERVER_BASE_DIR\n" + i + i + "}\n" +
+                i + "});\n" + "});\n\n" +
+                "gulp.task('bs-reload', function() {\n" +
+                i + "browserSync.reload();\n" + "});\n";
+        default:
+            console.warn('Type [' + type + '] is not a valid type');
+            return null;
         }
     },
     writeToFile: function(filePath, content) {
         fs.writeFile(filePath, content, function(err) {
-            if(err)
+            if (err)
                 return console.log(err);
         });
     },
