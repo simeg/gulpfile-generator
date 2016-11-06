@@ -159,10 +159,7 @@ module.exports = {
         }
     },
     writeToFile: function(filePath, content) {
-        fs.writeFile(filePath, content, function(err) {
-            if (err)
-                return console.log(err);
-        });
+        fs.writeFileSync(filePath, content);
     },
     sortOptions: function(options) {
         var order = [
