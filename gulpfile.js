@@ -8,7 +8,7 @@ var istanbul = require('gulp-istanbul');
 var plumber = require('gulp-plumber');
 
 gulp.task('static', function() {
-    return gulp.src('**/*.js')
+    return gulp.src('source/*.js')
         .pipe(excludeGitignore())
         .pipe(eslint())
         .pipe(eslint.format())
