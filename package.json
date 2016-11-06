@@ -38,6 +38,7 @@
     "gulp-istanbul": "^1.1.1",
     "gulp-mocha": "^3.0.1",
     "gulp-plumber": "^1.1.0",
+    "mocha": "^3.1.2",
     "mock-fs": "^3.12.1"
   }
 }
