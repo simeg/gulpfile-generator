@@ -1,5 +1,5 @@
 {
-  "name": "gulp-generator",
+  "name": "gulpfile-generator",
   "version": "1.0.0",
   "description": "An interactive generator for custom Gulp configurations",
   "author": "Simon Egersand <s.egersand@gmail.com>",
@@ -7,6 +7,7 @@
   "preferGlobal": true,
   "keywords": [
     "gulp",
+    "gulp file",
     "configuration",
     "generator",
     "devserver",
@@ -14,16 +15,16 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/simeg/gulp-generator.git"
+    "url": "https://github.com/simeg/gulpfile-generator.git"
   },
   "bugs": {
-    "url": "https://github.com/simeg/gulp-generator/issues"
+    "url": "https://github.com/simeg/gulpfile-generator/issues"
   },
   "engines": {
     "node": ">=0.12.0"
   },
   "bin": {
-    "gulp-generator": "source/cli.js"
+    "gulpfile-generator": "source/cli.js"
   },
   "scripts": {
     "test": "gulp"
