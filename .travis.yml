@@ -1,0 +1,15 @@
+language: node_js
+os:
+    - linux
+    - windows
+    - osx
+node_js:
+    - "stable"
+    - "6"
+    - "5"
+sudo: false
+script:
+    - gulp
+cache:
+  directories:
+    - node_modules
