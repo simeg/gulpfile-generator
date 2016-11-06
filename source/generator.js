@@ -5,12 +5,13 @@ var fs = require('fs');
 
 module.exports = {
     generateFile: function(options) {
-        console.log(JSON.stringify(options, null, '  '));
+        // console.log(JSON.stringify(options, null, '  '));
 
-        var source = options.jsScriptsSource;
-        var dest = options.jsScriptsDest;
-        var jsOptions = options.jsOptions;
-        var devServer = options.devServer;
+        var source, dest, jsOptions, devServer;
+        source = options.jsScriptsSource;
+        dest = options.jsScriptsDest;
+        jsOptions = options.jsOptions;
+        devServer = options.devServer;
         if (devServer)
             jsOptions.push('browserSync');
         jsOptions.push('dest');
