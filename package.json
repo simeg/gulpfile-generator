@@ -1,13 +1,23 @@
 {
   "name": "gulp-generator",
-  "version": "0.0.0",
-  "description": "A generator for Gulp configuration",
+  "version": "1.0.0",
+  "description": "An interactive generator for custom Gulp configurations",
   "author": "Simon Egersand <s.egersand@gmail.com>",
   "license": "MIT",
   "preferGlobal": true,
+  "keywords": [
+    "gulp",
+    "configuration",
+    "generator",
+    "devserver",
+    "cli"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/simeg/gulp-generator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/simeg/gulp-generator/issues"
   },
   "engines": {
     "node": ">=0.12.0"
@@ -15,11 +25,11 @@
   "bin": {
     "gulp-generator": "source/cli.js"
   },
-  "dependencies": {
-    "inquirer": "^1.2.2"
-  },
   "scripts": {
     "test": "gulp"
+  },
+  "dependencies": {
+    "inquirer": "^1.2.2"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
@@ -27,6 +37,7 @@
     "gulp-exclude-gitignore": "^1.0.0",
     "gulp-istanbul": "^1.1.1",
     "gulp-mocha": "^3.0.1",
-    "gulp-plumber": "^1.1.0"
+    "gulp-plumber": "^1.1.0",
+    "mock-fs": "^3.12.1"
   }
 }
