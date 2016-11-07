@@ -8,6 +8,7 @@ var moduleNames = require('./generator.config.json').moduleNames;
 var generator = {
     generateFile: function(options) {
         // console.log(JSON.stringify(options, null, '  '));
+        var g = generator;
 
         var source, dest, jsOptions, devServer;
         source = options.jsDistSource;
@@ -17,22 +18,25 @@ var generator = {
         if (devServer)
             jsOptions.push('browserSync');
         jsOptions.push('dest');
-        jsOptions = generator.sortOptions(jsOptions);
+        var sortedJsOptions = g.sortOptions(jsOptions);
 
         var content;
-        content = generator.getImports(jsOptions);
-        content += generator.getVariableDeclarations(source, dest, devServer);
+        content = g.getImports(sortedJsOptions);
+        content += g.getVariableDeclarations(source, dest, devServer);
 
         if (devServer)
-            content += "\n" + generator.getCustomCode('browserSync');
+            content += "\n" + g.getCustomCode('browserSync');
 
         content += '\n';
-        if (jsOptions && jsOptions.length)
-            content += generator.getScriptsTask(jsOptions, source, dest);
+        if (sortedJsOptions && sortedJsOptions.length)
+            content += g.getScriptsTask(sortedJsOptions, source, dest);
 
-        content += generator.getDefaultTask(jsOptions);
+        content += g.getDefaultTask(sortedJsOptions);
 
-        generator.writeToFile('gulpfile.js', content);
+        if (options.outputDependencies)
+            g.generateDependencyFile(sortedJsOptions);
+
+        g.writeToFile('gulpfile.js', content);
     },
     getImports: function(options) {
         var indentationBase = '    ';
@@ -157,6 +161,18 @@ var generator = {
         return options.sort(function(a, b){
             return order.indexOf(a) < order.indexOf(b) ? -1 : 1;
         });
+    },
+    generateDependencyFile: function(options) {
+        // Filter out non-valid dependencies
+        var dependencies = options.reduce(function(dependencies, option) {
+            var dependency = generator.getModulePath(option);
+            if (dependency)
+                dependencies.push(dependency);
+
+            return dependencies;
+        }, []);
+        var npmInstallStr = 'npm install --save-dev ' + dependencies.join(' ');
+        generator.writeToFile('install-dependencies.txt', npmInstallStr);
     }
 };
 

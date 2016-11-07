@@ -50,6 +50,11 @@
       "message": "JS build destination?",
       "default": "dist/scripts",
       "filter": null
+    },
+    {
+      "type": "confirm",
+      "name": "outputDependencies",
+      "message": "Do you want me to generate a file with an npm install string (install-dependencies.txt)?"
     }
   ]
 }
