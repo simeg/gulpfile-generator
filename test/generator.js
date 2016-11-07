@@ -53,8 +53,8 @@ describe('generator', function() {
         var defaultConfig = {
             'devServer': false,
             'jsOptions': [],
-            'jsScriptsSource': 'src/scripts',
-            'jsScriptsDest': 'dist/scripts'
+            'jsDistSource': 'src/scripts',
+            'jsDistDest': 'dist/scripts'
         };
 
         var stateBefore = fs.readFileSync('gulpfile.js', 'utf8');
@@ -69,8 +69,8 @@ describe('generator', function() {
             var defaultConfig = {
                 'devServer': false,
                 'jsOptions': [],
-                'jsScriptsSource': 'src/scripts',
-                'jsScriptsDest': 'dist/scripts'
+                'jsDistSource': 'src/scripts',
+                'jsDistDest': 'dist/scripts'
             };
             generator.generateFile(defaultConfig);
         });
@@ -137,8 +137,8 @@ describe('generator', function() {
             var config = {
                 'devServer': true,
                 'jsOptions': [],
-                'jsScriptsSource': 'src/scripts',
-                'jsScriptsDest': 'dist/scripts'
+                'jsDistSource': 'src/scripts',
+                'jsDistDest': 'dist/scripts'
             };
             generator.generateFile(config);
         });

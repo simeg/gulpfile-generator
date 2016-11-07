@@ -44,7 +44,7 @@ inquirer.prompt([
     },
     {
         type: 'input',
-        name: 'jsScriptsSource',
+        name: 'jsDistSource',
         message: 'JS source destination?',
         default: 'src/scripts',
         filter: function (val) {
@@ -55,7 +55,7 @@ inquirer.prompt([
     },
     {
         type: 'input',
-        name: 'jsScriptsDest',
+        name: 'jsDistDest',
         message: 'JS build destination?',
         default: 'dist/scripts',
         filter: function (val) {

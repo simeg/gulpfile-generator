@@ -8,8 +8,8 @@ module.exports = {
         // console.log(JSON.stringify(options, null, '  '));
 
         var source, dest, jsOptions, devServer;
-        source = options.jsScriptsSource;
-        dest = options.jsScriptsDest;
+        source = options.jsDistSource;
+        dest = options.jsDistDest;
         jsOptions = options.jsOptions;
         devServer = options.devServer;
         if (devServer)
