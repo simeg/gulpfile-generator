@@ -1,0 +1,19 @@
+{
+  "moduleNames": {
+    "babel": "gulp-babel",
+    "browserSync": "browser-sync",
+    "coffee": "gulp-coffee",
+    "concat": "gulp-concat",
+    "jshint": "gulp-jshint",
+    "uglify": "gulp-uglify"
+  },
+  "sortOrder": [
+    "coffee",
+    "jshint",
+    "concat",
+    "babel",
+    "uglify",
+    "dest",
+    "browserSync"
+  ]
+}

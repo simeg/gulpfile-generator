@@ -2,6 +2,8 @@
 'use strict';
 
 var fs = require('fs');
+var sortOrder = require('./generator.config.json').sortOrder;
+var moduleNames = require('./generator.config.json').moduleNames;
 
 module.exports = {
     generateFile: function(options) {
@@ -41,10 +43,10 @@ module.exports = {
 
         // Add gulp imports (in top of file)
         for (var i = 0; i < options.length; i++) {
-            var option = options[i];
-            var gulpOption = this.getPath(option);
-            if (gulpOption)
-                content += "var " + option + " = require('" + gulpOption + "');\n";
+            var importName = options[i];
+            var importPath = this.getModulePath(importName);
+            if (importPath)
+                content += "var " + importName + " = require('" + importPath + "');\n";
         }
 
         return content;
@@ -101,23 +103,11 @@ module.exports = {
             (isDevServer ? (i + "gulp.watch(WATCH_FILE_EXTENSIONS, ['bs-reload']);\n") : '') +
             "});\n");
     },
-    getPath: function (name) {
-        switch (name) {
-        case 'babel':
-            return 'gulp-babel';
-        case 'browserSync':
-            return 'browser-sync';
-        case 'coffee':
-            return 'gulp-coffee';
-        case 'concat':
-            return 'gulp-concat';
-        case 'jshint':
-            return 'gulp-jshint';
-        case 'uglify':
-            return 'gulp-uglify';
-        default:
-            return null;
-        }
+    getModulePath: function (name) {
+        if (moduleNames[name])
+            return moduleNames[name];
+
+        return null;
     },
     getJsOptionCode: function(name) {
         switch (name) {
@@ -163,15 +153,7 @@ module.exports = {
         fs.writeFileSync(filePath, content);
     },
     sortOptions: function(options) {
-        var order = [
-            'coffee',
-            'jshint',
-            'concat',
-            'babel',
-            'uglify',
-            'dest',
-            'browserSync'
-        ];
+        var order = sortOrder;
         return options.sort(function(a, b){
             return order.indexOf(a) < order.indexOf(b) ? -1 : 1;
         });
