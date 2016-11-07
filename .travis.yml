@@ -11,9 +11,7 @@ before_script:
   - npm install -g gulp codecov istanbul
 script:
     - gulp
-    - istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && codecov
-cache:
-  directories:
-    - node_modules
+    - istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec
+    - codecov
 after_success:
   - bash <(curl -s https://codecov.io/bash)
