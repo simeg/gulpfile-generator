@@ -5,7 +5,7 @@
 var assert = require('assert');
 var fsMock = require('mock-fs');
 var fs = require('fs');
-var generator = require('./../source/generator.js');
+var generator = Object.freeze(require('./../source/generator.js'));
 
 describe('generator', function() {
     beforeEach(function() {

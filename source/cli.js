@@ -2,8 +2,8 @@
 'use strict';
 
 var inquirer = require('inquirer');
-var generator = require('./generator');
-var questions = require('./cli.config.json').questions;
+var generator = Object.freeze(require('./generator'));
+var questions = Object.freeze(require('./cli.config.json').questions);
 
 /*
  * - Removes trailing slash

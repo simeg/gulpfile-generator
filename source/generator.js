@@ -2,8 +2,8 @@
 'use strict';
 
 var fs = require('fs');
-var sortOrder = require('./generator.config.json').sortOrder;
-var moduleNames = require('./generator.config.json').moduleNames;
+var sortOrder = Object.freeze(require('./generator.config.json').sortOrder);
+var moduleNames = Object.freeze(require('./generator.config.json').moduleNames);
 
 var generator = {
     generateFile: function(options) {
