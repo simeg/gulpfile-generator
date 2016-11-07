@@ -58,7 +58,7 @@ describe('generator', function() {
         };
 
         var stateBefore = fs.readFileSync('gulpfile.js', 'utf8');
-        generator.generateFile(defaultConfig);
+        generator(defaultConfig);
         var stateAfter = fs.readFileSync('gulpfile.js', 'utf8');
         assert.notEqual(stateBefore, stateAfter);
     });
@@ -72,7 +72,7 @@ describe('generator', function() {
                 'jsDistSource': 'src/scripts',
                 'jsDistDest': 'dist/scripts'
             };
-            generator.generateFile(defaultConfig);
+            generator(defaultConfig);
         });
 
         it('generates default imports', function() {
@@ -140,7 +140,7 @@ describe('generator', function() {
                 'jsDistSource': 'src/scripts',
                 'jsDistDest': 'dist/scripts'
             };
-            generator.generateFile(config);
+            generator(config);
         });
 
         it('generates correct imports', function() {

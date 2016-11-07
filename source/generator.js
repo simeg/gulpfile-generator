@@ -5,7 +5,7 @@ var fs = require('fs');
 var sortOrder = require('./generator.config.json').sortOrder;
 var moduleNames = require('./generator.config.json').moduleNames;
 
-module.exports = {
+var generator = {
     generateFile: function(options) {
         // console.log(JSON.stringify(options, null, '  '));
 
@@ -17,22 +17,22 @@ module.exports = {
         if (devServer)
             jsOptions.push('browserSync');
         jsOptions.push('dest');
-        jsOptions = this.sortOptions(jsOptions);
+        jsOptions = generator.sortOptions(jsOptions);
 
         var content;
-        content = this.getImports(jsOptions);
-        content += this.getVariableDeclarations(source, dest, devServer);
+        content = generator.getImports(jsOptions);
+        content += generator.getVariableDeclarations(source, dest, devServer);
 
         if (devServer)
-            content += "\n" + this.getCustomCode('browserSync');
+            content += "\n" + generator.getCustomCode('browserSync');
 
         content += '\n';
         if (jsOptions && jsOptions.length)
-            content += this.getScriptsTask(jsOptions, source, dest);
+            content += generator.getScriptsTask(jsOptions, source, dest);
 
-        content += this.getDefaultTask(jsOptions);
+        content += generator.getDefaultTask(jsOptions);
 
-        this.writeToFile('gulpfile.js', content);
+        generator.writeToFile('gulpfile.js', content);
     },
     getImports: function(options) {
         var indentationBase = '    ';
@@ -44,9 +44,9 @@ module.exports = {
         // Add gulp imports (in top of file)
         for (var i = 0; i < options.length; i++) {
             var importName = options[i];
-            var importPath = this.getModulePath(importName);
-            if (importPath)
-                content += "var " + importName + " = require('" + importPath + "');\n";
+            var gulpImport = generator.getModulePath(importName);
+            if (gulpImport)
+                content += "var " + importName + " = require('" + gulpImport + "');\n";
         }
 
         return content;
@@ -75,12 +75,12 @@ module.exports = {
             i + i + ".pipe(plumber({\n" +
             i + i + i + "errorHandler: function(error) {\n" +
             i + i + i + i + "console.log(error.message);\n" +
-            i + i + i + i + "this.emit('end');\n" + i + i + "}}))\n";
+            i + i + i + i + "generator.emit('end');\n" + i + i + "}}))\n";
 
         // Add gulp pipeline tasks
         for (var j = 0; j < options.length; j++) {
             var option = options[j];
-            var gulpCode = this.getJsOptionCode(option, dest);
+            var gulpCode = generator.getJsOptionCode(option, dest);
             if (gulpCode)
                 content += i + i + gulpCode + "\n";
 
@@ -159,3 +159,5 @@ module.exports = {
         });
     }
 };
+
+module.exports = generator.generateFile;

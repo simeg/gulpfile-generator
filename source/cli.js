@@ -26,5 +26,5 @@ var questionsWithFilter = questions.map(function(questionsObj) {
 });
 
 inquirer.prompt(questionsWithFilter).then(function(answers) {
-    generator.generateFile(answers);
+    generator(answers);
 });
