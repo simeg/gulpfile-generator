@@ -3,16 +3,24 @@
 var gulp = require('gulp');
 var eslint = require('gulp-eslint');
 var excludeGitignore = require('gulp-exclude-gitignore');
+var jsonlint = require("gulp-jsonlint");
 var mocha = require('gulp-mocha');
 var istanbul = require('gulp-istanbul');
 var plumber = require('gulp-plumber');
 
 gulp.task('static', function() {
-    return gulp.src('source/*.js')
+    gulp.src('source/*.js')
         .pipe(excludeGitignore())
         .pipe(eslint())
         .pipe(eslint.format())
         .pipe(eslint.failAfterError());
+});
+
+gulp.task('json', function(cb) {
+    gulp.src(["**/*.json", "!./node_modules/**/*.json"])
+        .pipe(jsonlint())
+        .pipe(jsonlint.reporter());
+    cb();
 });
 
 gulp.task('test', function(cb) {
@@ -30,4 +38,4 @@ gulp.task('test', function(cb) {
         });
 });
 
-gulp.task('default', ['static', 'test']);
+gulp.task('default', ['json', 'static', 'test']);
