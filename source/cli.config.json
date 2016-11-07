@@ -1,0 +1,55 @@
+{
+  "questions": [
+    {
+      "type": "confirm",
+      "name": "devServer",
+      "message": "Do you want a dev server?"
+    },
+    {
+      "type": "checkbox",
+      "name": "jsOptions",
+      "message": "Select what options you want for your JavaScript",
+      "choices": [
+        {
+          "name": "Concat",
+          "short": "Concat",
+          "value": "concat"
+        },
+        {
+          "name": "Uglify",
+          "short": "Uglify",
+          "value": "uglify"
+        },
+        {
+          "name": "Hint",
+          "short": "Hint",
+          "value": "jshint"
+        },
+        {
+          "name": "Convert ES6 -> ES5",
+          "short": "ES6->ES5",
+          "value": "babel"
+        },
+        {
+          "name": "Compile CoffeeScript",
+          "short": "CoffeeScript",
+          "value": "coffee"
+        }
+      ]
+    },
+    {
+      "type": "input",
+      "name": "jsDistSource",
+      "message": "JS source destination?",
+      "default": "src/scripts",
+      "filter": null
+    },
+    {
+      "type": "input",
+      "name": "jsDistDest",
+      "message": "JS build destination?",
+      "default": "dist/scripts",
+      "filter": null
+    }
+  ]
+}
