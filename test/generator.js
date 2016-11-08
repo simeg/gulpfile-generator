@@ -179,8 +179,99 @@ describe('generator', function() {
             });
         });
 
-        describe('with JavaScript options', function() {
-            // TODO
+        describe('with JavaScript option(s)', function() {
+            beforeEach(function() {
+                fsMock({
+                    'gulpfile.js': ''
+                });
+            });
+
+            const generateFile = function(jsOptions) {
+                const config = {
+                    'devServer': false,
+                    'jsOptions': jsOptions,
+                    'jsDistSource': 'src/scripts',
+                    'jsDistDest': 'dist/scripts',
+                    'outputDependencies': false
+                };
+                generator(config);
+            };
+
+            const runTestUsingSingleIndex = function(index) {
+                var jsOption = jsOptions[index],
+                    code = generatedCode[index],
+                    result;
+
+                it(jsOption, function() {
+                    generateFile([jsOption]);
+                    var stateAfter = fs.readFileSync('gulpfile.js', 'utf8');
+
+                    if (result = (stateAfter.indexOf(code) === -1))
+                        assert.fail(result, true, 'Code not found');
+
+                    assert(true, 'Code for: [' + jsOption + '] found');
+                });
+            };
+
+            // TODO: See if this can be 
+            const runTestUsingTwoIndexes = function(indexes) {
+                var jsOptionOne = jsOptions[indexes[0]],
+                    codeOne = generatedCode[indexes[0]],
+                    jsOptionTwo = jsOptions[indexes[1]],
+                    codeTwo = generatedCode[indexes[1]],
+                    result;
+
+                it(jsOptionOne + ' and ' + jsOptionTwo, function() {
+                    generateFile([jsOptionOne, jsOptionTwo]);
+                    var stateAfter = fs.readFileSync('gulpfile.js', 'utf8');
+
+                    if (result = (stateAfter.indexOf(codeOne) === -1))
+                        assert.fail(result, true, 'Code not found');
+
+                    if (result = (stateAfter.indexOf(codeTwo) === -1))
+                        assert.fail(result, true, 'Code not found');
+
+                    assert(true, 'Code for: [' + jsOptionOne + ' and ' + jsOptionTwo + '] found');
+                });
+            };
+
+            // These two arrays match against index, so jsOptions[0]
+            // generates code that's in generatedCode[0] and so on
+            const jsOptions = [
+                "coffee",
+                "jshint",
+                "concat",
+                "babel",
+                "uglify"
+            ];
+
+            const generatedCode = [
+                ".pipe(coffee({bare: true}))",
+                ".pipe(jshint())\n" +
+                "    .pipe(jshint.reporter('default'))",
+                ".pipe(concat(OUTPUT_FILE))",
+                ".pipe(babel())",
+                ".pipe(gulp.dest(DEST + '/'))\n" +
+                "    .pipe(rename({suffix: '.min'}))\n" +
+                "    .pipe(uglify())"
+            ];
+
+            describe('using only one option', function() {
+                for (var i = 0; i < jsOptions.length; i++) {
+                    runTestUsingSingleIndex(i);
+                }
+            });
+
+            describe('using combination of options', function() {
+                for (var i = 0; i < jsOptions.length; i++) {
+                    for (var j = 0; j < jsOptions.length; j++) {
+                        if (j === i)
+                            continue;
+
+                        runTestUsingTwoIndexes([i, j]);
+                    }
+                }
+            });
         });
     });
 
@@ -218,5 +309,9 @@ describe('generator', function() {
             var expect = 'npm install --save-dev gulp-jshint gulp-babel gulp-uglify browser-sync';
             assert.equal(actual, expect);
         });
+    });
+
+    describe('is sorting properly', function() {
+        // TODO: how?
     });
 });
