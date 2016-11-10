@@ -18,8 +18,7 @@ var formatString = function (val) {
 };
 
 var questionsWithFilter = questions.map(function(questionsObj) {
-    if (questionsObj.name === 'jsDistDest' ||
-        questionsObj.name === 'jsDistSource') {
+    if (questionsObj.filter === 'formatDist') {
         questionsObj.filter = formatString;
     }
     return questionsObj;

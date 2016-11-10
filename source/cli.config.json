@@ -21,8 +21,8 @@
           "value": "uglify"
         },
         {
-          "name": "Hint",
-          "short": "Hint",
+          "name": "JSHint",
+          "short": "JSHint",
           "value": "jshint"
         },
         {
@@ -40,16 +40,74 @@
     {
       "type": "input",
       "name": "jsDistSource",
-      "message": "JS source destination?",
+      "message": "JS source destination",
       "default": "src/scripts",
-      "filter": null
+      "filter": "formatDist"
     },
     {
       "type": "input",
       "name": "jsDistDest",
-      "message": "JS build destination?",
+      "message": "JS build destination",
       "default": "dist/scripts",
-      "filter": null
+      "filter": "formatDist"
+    },
+    {
+      "type": "list",
+      "name": "cssPreProcessorType",
+      "message": "Which pre-processor do you want to use for your CSS?",
+      "choices": [
+        {
+          "name": "None",
+          "short": "None",
+          "value": "none"
+        },
+        {
+          "name": "LESS",
+          "short": "LESS",
+          "value": "less"
+        },
+        {
+          "name": "Sass",
+          "short": "Sass",
+          "value": "sass"
+        },
+        {
+          "name": "Stylus",
+          "short": "Stylus",
+          "value": "stylus"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "name": "cssOptions",
+      "message": "Select what options you want for your CSS?",
+      "choices": [
+        {
+          "name": "Autoprefix",
+          "short": "Autoprefix",
+          "value": "autoprefixer"
+        },
+        {
+          "name": "Minify",
+          "short": "Minify",
+          "value": "minifycss"
+        }
+      ]
+    },
+    {
+      "type": "input",
+      "name": "cssDistSource",
+      "message": "CSS source destination",
+      "default": "src/styles",
+      "filter": "formatDist"
+    },
+    {
+      "type": "input",
+      "name": "cssDistDest",
+      "message": "CSS build destination",
+      "default": "dist/styles",
+      "filter": "formatDist"
     },
     {
       "type": "confirm",
