@@ -83,9 +83,9 @@ describe('generator', function() {
 
             it('generates default variables', function() {
                 var defaultVariables = [
-                    "var SOURCE = 'src/scripts'",
-                    "var DEST = 'dist/scripts'",
-                    "var OUTPUT_FILE = 'main.js'"
+                    "var JS_SOURCE = 'src/scripts'",
+                    "var JS_DEST = 'dist/scripts'",
+                    "var JS_OUTPUT_FILE = 'main.js'"
                 ];
                 var stateAfter = fs.readFileSync('gulpfile.js', 'utf8');
                 checkVariables(stateAfter, defaultVariables);
@@ -148,9 +148,9 @@ describe('generator', function() {
 
             it('generates correct variables', function() {
                 var correctVariables = [
-                    "var SOURCE = 'src/scripts'",
-                    "var DEST = 'dist/scripts'",
-                    "var OUTPUT_FILE = 'main.js'",
+                    "var JS_SOURCE = 'src/scripts'",
+                    "var JS_DEST = 'dist/scripts'",
+                    "var JS_OUTPUT_FILE = 'main.js'",
                     "var SERVER_BASE_DIR = './';",
                     "var WATCH_FILE_EXTENSIONS = ['*.html'];"
                 ];
@@ -217,8 +217,8 @@ describe('generator', function() {
                     assert(true, 'Code for: [' + jsOption + '] found');
                 });
             };
-
-            // TODO: See if this can be
+            
+            // TODO: See if this can be written using runTestUsingSingleIndex()
             const runTestUsingTwoIndexes = function(indexes) {
                 var jsOptionOne = jsOptions[indexes[0]],
                     codeOne = generatedCode[indexes[0]],
@@ -254,9 +254,9 @@ describe('generator', function() {
                 ".pipe(coffee({bare: true}))",
                 ".pipe(jshint())\n" +
                 "    .pipe(jshint.reporter('default'))",
-                ".pipe(concat(OUTPUT_FILE))",
+                ".pipe(concat(JS_OUTPUT_FILE))",
                 ".pipe(babel())",
-                ".pipe(gulp.dest(DEST + '/'))\n" +
+                ".pipe(gulp.dest(JS_DEST + '/'))\n" +
                 "    .pipe(rename({suffix: '.min'}))\n" +
                 "    .pipe(uglify())"
             ];
