@@ -10,10 +10,9 @@ before_script:
   - npm install -g gulp codecov istanbul
 script:
     - gulp
-    - istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec
+    - istanbul cover ./node_modules/mocha/bin/_mocha -- -R spec
 cache:
   directories:
     - node_modules
 after_success:
-  - ls -al
   - bash <(curl -s https://codecov.io/bash)
