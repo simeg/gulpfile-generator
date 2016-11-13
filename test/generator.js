@@ -319,5 +319,5 @@ describe('generator', function() {
 
     describe('is sorting properly', function() {
         // TODO: how?
-    });*/
+    });
 });
