@@ -12,6 +12,7 @@ script:
     - ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec
     - ./node_modules/.bin/codecov
     - ls -la ./coverage
+    - cat ./gulpfile.js
 cache:
   directories:
     - node_modules
