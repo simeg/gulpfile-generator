@@ -7,7 +7,7 @@ node_js:
     - "6"
 sudo: false
 before_script:
-  - npm install -g gulp codecov istanbul
+  - npm install -g gulp codecov istanbul codecov.io
 script:
     - gulp
     - istanbul cover ./node_modules/mocha/bin/_mocha --report json -- -R spec
