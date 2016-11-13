@@ -5,9 +5,14 @@
 var assert = require('assert');
 var fs = require('fs');
 var generator = Object.freeze(require('./../source/generator.js'));
-var fsMock = process.env.NODE_ENV === 'test' ? function() {} : require('mock-fs');
+var fsMock = require('mock-fs');
 
 describe('generator', function() {
+
+    after(function() {
+        fsMock.restore();
+    });
+
     describe('generates a gulpfile.js', function() {
 
         var defaultConfig;
