@@ -3,9 +3,9 @@
 'use strict';
 
 var assert = require('assert');
-var fsMock = require('mock-fs');
 var fs = require('fs');
 var generator = Object.freeze(require('./../source/generator.js'));
+var fsMock = process.env.NODE_ENV === 'test' ? function() {} : require('mock-fs');
 
 describe('generator', function() {
     describe('generates a gulpfile.js', function() {
@@ -213,7 +213,7 @@ describe('generator', function() {
                 });
             };
 
-            // TODO: See if this can be 
+            // TODO: See if this can be
             const runTestUsingTwoIndexes = function(indexes) {
                 var jsOptionOne = jsOptions[indexes[0]],
                     codeOne = generatedCode[indexes[0]],
