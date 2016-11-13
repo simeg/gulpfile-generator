@@ -3,11 +3,17 @@
 'use strict';
 
 var assert = require('assert');
-var fsMock = require('mock-fs');
+//var fsMock = require('mock-fs');
+var fsMock = function(a,b,c) { return; }
 var fs = require('fs');
 var generator = Object.freeze(require('./../source/generator.js'));
 
 describe('generator', function() {
+
+    it('it should create a report for this', function() {
+        assert(true, 'oh yeah');
+    });
+
     describe('generates a gulpfile.js', function() {
 
         var defaultConfig;
