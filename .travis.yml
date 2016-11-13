@@ -9,8 +9,8 @@ sudo: false
 before_script:
   - npm install -g gulp codecov istanbul codecov.io
 script:
-    - gulp
-    - istanbul cover ./node_modules/mocha/bin/_mocha --report json -- -R spec
+    - ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec
+    - ./node_modules/.bin/codecov
 cache:
   directories:
     - node_modules
