@@ -57,7 +57,7 @@ var generator = {
         return optionsObj;
     },
     getCssOptions: function(userSelectedOptions) {
-        if ((userSelectedOptions.cssOptions.length > 0) &&
+        if ((userSelectedOptions.cssOptions.length === 0) &&
             (userSelectedOptions.preProcessorType === 'none'))
             return {};
 
