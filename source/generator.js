@@ -204,10 +204,7 @@ var generator = {
             "});\n");
     },
     getModulePath: function (name) {
-        if (moduleNames[name])
-            return moduleNames[name];
-
-        return null;
+        return moduleNames[name] || null;
     },
     getCssOptionCode: function(name) {
         switch (name) {
@@ -268,7 +265,6 @@ var generator = {
                 "gulp.task('bs-reload', function() {\n" +
                 i + "browserSync.reload();\n" + "});\n";
         default:
-            console.warn('Type [' + type + '] is not a valid type');
             return null;
         }
     },
