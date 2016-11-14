@@ -2,7 +2,7 @@
 'use strict';
 
 var fs = require('fs');
-var sortOrder = Object.freeze(require('./generator.config.json').sortOrder);
+var sortOrders = Object.freeze(require('./generator.config.json').sortOrders);
 var moduleNames = Object.freeze(require('./generator.config.json').moduleNames);
 
 var generator = {
@@ -10,28 +10,59 @@ var generator = {
         // console.log(JSON.stringify(options, null, '  '));
         var g = generator;
 
-        var source, dest, jsOptions, devServer;
-        source = options.jsDistSource;
-        dest = options.jsDistDest;
-        jsOptions = options.jsOptions;
+        var devServer,
+            jsObject = {},
+            cssObject = {};
+
         devServer = options.devServer;
+
+        jsObject.options = options.jsOptions;
+        jsObject.source = options.jsDistSource;
+        jsObject.dest = options.jsDistDest;
+        jsObject.sortType = 'js';
+
         if (devServer)
-            jsOptions.push('browserSync');
-        jsOptions.push('dest');
-        var sortedJsOptions = g.sortOptions(jsOptions);
+            jsObject.options.push('browserSync');
+        jsObject.options.push('dest');
+
+        cssObject.options = options.cssOptions;
+        cssObject.source = options.cssDistSource;
+        cssObject.dest = options.cssDistDest;
+        cssObject.preProcessorType = options.cssPreProcessorType;
+        cssObject.sortType = 'css';
+        var includeCss = (cssObject.options.length > 0) || (cssObject.preProcessorType !== 'none');
+
+        if (includeCss) {
+            if (devServer)
+                cssObject.options.push('browserSync');
+            cssObject.options.push('dest');
+
+            if (cssObject.preProcessorType !== 'none')
+                cssObject.options.push(cssObject.preProcessorType);
+        }
+
+        var sortedJsOptions = g.sortOptions(jsObject);
+        var sortedCssOptions = includeCss ? g.sortOptions(cssObject) : [];
 
         var content;
-        content = g.getImports(sortedJsOptions);
-        content += g.getVariableDeclarations(source, dest, devServer);
+        var totalOptions = sortedJsOptions.concat(sortedCssOptions);
+
+        content = g.getImports(totalOptions);
+        content += g.getVariableDeclarations(devServer, jsObject, cssObject);
 
         if (devServer)
             content += "\n" + g.getCustomCode('browserSync');
 
         content += '\n';
-        if (sortedJsOptions && sortedJsOptions.length)
-            content += g.getScriptsTask(sortedJsOptions, source, dest);
 
-        content += g.getDefaultTask(sortedJsOptions);
+        if (sortedJsOptions && sortedJsOptions.length)
+            content += g.getScriptsTask(sortedJsOptions, jsObject);
+
+        if (sortedCssOptions && sortedCssOptions.length)
+            content += g.getStylesTask(sortedCssOptions, cssObject);
+
+        totalOptions.push(cssObject.preProcessorType);
+        content += g.getDefaultTask(totalOptions);
 
         if (options.outputDependencies)
             g.generateDependencyFile(sortedJsOptions);
@@ -46,8 +77,8 @@ var generator = {
             i + "rename = require('gulp-rename');\n";
 
         // Add gulp imports (in top of file)
-        for (var i = 0; i < options.length; i++) {
-            var importName = options[i];
+        for (var j = 0; j < options.length; j++) {
+            var importName = options[j];
             var gulpImport = generator.getModulePath(importName);
             if (gulpImport)
                 content += "var " + importName + " = require('" + gulpImport + "');\n";
@@ -55,11 +86,14 @@ var generator = {
 
         return content;
     },
-    getVariableDeclarations: function(source, dest, devServer) {
+    getVariableDeclarations: function(devServer, jsOptions, cssOptions) {
         var content;
-        content = "\nvar SOURCE = '" + source + "';";
-        content += "\nvar DEST = '" + dest + "';";
-        content += "\nvar OUTPUT_FILE = 'main.js';";
+        content = "\nvar JS_SOURCE = '" + jsOptions.source + "';";
+        content += "\nvar JS_DEST = '" + jsOptions.dest + "';";
+        content += "\nvar JS_OUTPUT_FILE = 'main.js';";
+
+        content += "\nvar CSS_SOURCE = '" + cssOptions.source + "';";
+        content += "\nvar CSS_DEST = '" + cssOptions.dest + "';";
         if (devServer) {
             content += "\nvar SERVER_BASE_DIR = './';";
             content += "\nvar WATCH_FILE_EXTENSIONS = ['*.html'];";
@@ -68,23 +102,35 @@ var generator = {
 
         return content;
     },
-    getScriptsTask: function(options, source, dest) {
-        var isCoffee = (options.indexOf('coffee') !== -1);
-        var scriptExtension = (isCoffee ? '.coffee' : '.js');
+    getStylesTask: function(options, cssObject) {
+        var preProcessing,
+            type = cssObject.preProcessorType;
 
         var indentationBase = '  ';
         var i = indentationBase;
-        var content = "gulp.task('scripts', function() {\n" +
-            i + "return gulp.src(SOURCE + '/**/*" + scriptExtension + "')\n" +
-            i + i + ".pipe(plumber({\n" +
-            i + i + i + "errorHandler: function(error) {\n" +
-            i + i + i + i + "console.log(error.message);\n" +
-            i + i + i + i + "generator.emit('end');\n" + i + i + "}}))\n";
+        if (type !== 'none') {
+            var styleExtension;
+            if (type === 'less') {
+                styleExtension = '.less';
+            } else if (type === 'sass') {
+                styleExtension = '.scss';
+            } else if (type === 'stylus') {
+                styleExtension = '.styl';
+            }
+            preProcessing = i + "gulp.src(CSS_SOURCE + '/**/*" + styleExtension + "')\n" +
+                i + i + ".pipe(plumber({\n" +
+                i + i + i + "errorHandler: function(error) {\n" +
+                i + i + i + i + "console.log(error.message);\n" +
+                i + i + i + i + "generator.emit('end');\n" + i + i + "}}))\n";
+        }
+
+        var content = "gulp.task('styles', function() {\n" +
+            (preProcessing ? preProcessing : '');
 
         // Add gulp pipeline tasks
         for (var j = 0; j < options.length; j++) {
             var option = options[j];
-            var gulpCode = generator.getJsOptionCode(option, dest);
+            var gulpCode = generator.getCssOptionCode(option, cssObject.dest);
             if (gulpCode)
                 content += i + i + gulpCode + "\n";
 
@@ -94,16 +140,60 @@ var generator = {
 
         return content;
     },
-    getDefaultTask: function(options) {
+    getScriptsTask: function(options, jsObject) {
         var isCoffee = (options.indexOf('coffee') !== -1);
-        var isDevServer = (options.indexOf('browserSync') !== -1);
         var scriptExtension = (isCoffee ? '.coffee' : '.js');
 
         var indentationBase = '  ';
         var i = indentationBase;
+        var content = "gulp.task('scripts', function() {\n" +
+            i + "return gulp.src(JS_SOURCE + '/**/*" + scriptExtension + "')\n" +
+            i + i + ".pipe(plumber({\n" +
+            i + i + i + "errorHandler: function(error) {\n" +
+            i + i + i + i + "console.log(error.message);\n" +
+            i + i + i + i + "generator.emit('end');\n" + i + i + "}}))\n";
+
+        // Add gulp pipeline tasks
+        for (var j = 0; j < options.length; j++) {
+            var option = options[j];
+            var gulpCode = generator.getJsOptionCode(option, jsObject.dest);
+            if (gulpCode)
+                content += i + i + gulpCode + "\n";
+
+            if (j === (options.length - 1))
+                content += "});\n\n";
+        }
+
+        return content;
+    },
+    getDefaultTask: function(allOptions) {
+        var indentationBase = '  ';
+        var i = indentationBase;
+
+        var isDevServer = (allOptions.indexOf('browserSync') !== -1);
+
+        var isCoffee = (allOptions.indexOf('coffee') !== -1);
+        var scriptExtension = (isCoffee ? '.coffee' : '.js');
+        var scriptWatchRow =
+            i + "gulp.watch(JS_SOURCE + '/**/*" + scriptExtension + "', ['scripts']);" + "\n";
+
+        var styleExtension = null;
+        if (allOptions.indexOf('less') !== -1) {
+            styleExtension = '.less';
+        } else if (allOptions.indexOf('sass') !== -1) {
+            styleExtension = '.scss';
+        } else if (allOptions.indexOf('stylus') !== -1) {
+            styleExtension = '.styl';
+        }
+
+        if (styleExtension)
+            var styleWatchRow = i + "gulp.watch(CSS_SOURCE + '/**/*" + styleExtension +
+                "', ['styles']);" + "\n";
+
         return (
             "gulp.task('default', " + (isDevServer ? "['browser-sync'], " : '') + "function() {\n" +
-            i + "gulp.watch(SOURCE + '/**/*" + scriptExtension + "', ['scripts']);\n" +
+            scriptWatchRow +
+            (styleWatchRow ? styleWatchRow : '') +
             (isDevServer ? (i + "gulp.watch(WATCH_FILE_EXTENSIONS, ['bs-reload']);\n") : '') +
             "});\n");
     },
@@ -112,6 +202,29 @@ var generator = {
             return moduleNames[name];
 
         return null;
+    },
+    getCssOptionCode: function(name) {
+        switch (name) {
+        case 'autoprefixer':
+            return ".pipe(autoprefixer('last 2 versions'))";
+        case 'browserSync':
+            return ".pipe(browserSync.reload({stream:true}))";
+        case 'dest':
+            return ".pipe(gulp.dest(CSS_DEST + '/'))";
+        case 'less':
+            return ".pipe(less())";
+        case 'minifycss':
+            return ".pipe(gulp.dest(CSS_DEST + '/'))\n" +
+                "    .pipe(rename({suffix: '.min'}))\n" +
+                "    .pipe(minifycss())";
+        case 'sass':
+            return ".pipe(sass())";
+        case 'stylus':
+            return ".pipe(stylus())";
+        default:
+            console.warn('Option [' + name + '] is not a valid CSS option');
+            return null;
+        }
     },
     getJsOptionCode: function(name) {
         switch (name) {
@@ -122,18 +235,18 @@ var generator = {
         case 'coffee':
             return ".pipe(coffee({bare: true}))";
         case 'concat':
-            return ".pipe(concat(OUTPUT_FILE))";
+            return ".pipe(concat(JS_OUTPUT_FILE))";
         case 'dest':
-            return ".pipe(gulp.dest(DEST + '/'))";
+            return ".pipe(gulp.dest(JS_DEST + '/'))";
         case 'jshint':
             return ".pipe(jshint())\n" +
                 "    .pipe(jshint.reporter('default'))";
         case 'uglify':
-            return ".pipe(gulp.dest(DEST + '/'))\n" +
+            return ".pipe(gulp.dest(JS_DEST + '/'))\n" +
                 "    .pipe(rename({suffix: '.min'}))\n" +
                 "    .pipe(uglify())";
         default:
-            console.warn('Option [' + name + '] is not a valid option');
+            console.warn('Option [' + name + '] is not a valid JS option');
             return null;
         }
     },
@@ -156,9 +269,9 @@ var generator = {
     writeToFile: function(filePath, content) {
         fs.writeFileSync(filePath, content);
     },
-    sortOptions: function(options) {
-        var order = sortOrder;
-        return options.sort(function(a, b){
+    sortOptions: function(object) {
+        var order = sortOrders[object.sortType];
+        return object.options.sort(function(a, b) {
             return order.indexOf(a) < order.indexOf(b) ? -1 : 1;
         });
     },
