@@ -265,6 +265,7 @@ var generator = {
                 "gulp.task('bs-reload', function() {\n" +
                 i + "browserSync.reload();\n" + "});\n";
         default:
+            console.warn('Type [' + type + '] is not a valid custom code option');
             return null;
         }
     },
