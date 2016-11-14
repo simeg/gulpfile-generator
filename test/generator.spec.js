@@ -345,6 +345,17 @@ describe('generator', function() {
                 ".pipe(browserSync.reload({stream:true}))"
             ];
 
+            it('returns empty CSS object when nothing to generate', function() {
+                var generateNoCssCodeForThisObject = {
+                    cssDistSource: 'distSource',
+                    cssDistDest: 'distDest',
+                    cssOptions: [],
+                    preProcessorType: 'none'
+                };
+                var cssObject = generator.getCssOptions(generateNoCssCodeForThisObject);
+                assert.deepEqual(cssObject, {});
+            });
+
             describe('using only one option', function() {
                 var cssObject = {
                         index: null,
@@ -534,6 +545,15 @@ describe('generator', function() {
 
             assert(console.warn.calledOnce);
             assert(console.warn.calledWith('Option [incorrectOption] is not a valid CSS option'));
+        });
+
+        it('on incorrect custom code type', function() {
+            var type = 'nonValidType';
+            generator.getCustomCode(type);
+
+            assert(console.warn.calledOnce);
+            assert(console.warn.calledWith(
+                'Type [' + type + '] is not a valid custom code option'));
         });
     });
 
