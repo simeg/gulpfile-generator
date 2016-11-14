@@ -30,6 +30,7 @@
     "test": "gulp"
   },
   "dependencies": {
+    "cli-list": "^0.2.0",
     "inquirer": "^1.2.2"
   },
   "devDependencies": {
