@@ -4,8 +4,9 @@
 
 var assert = require('assert');
 var fs = require('fs');
-var generator = Object.freeze(require('./../source/generator.js'));
 var fsMock = require('mock-fs');
+var generator = Object.freeze(require('./../source/generator.js'));
+require('mocha-sinon');
 
 describe('generator', function() {
 
@@ -483,6 +484,52 @@ describe('generator', function() {
             var actual = fs.readFileSync('install-dependencies.txt', 'utf8');
             var expect = 'npm install --save-dev gulp gulp-plumber gulp-rename gulp-jshint gulp-babel gulp-uglify browser-sync';
             assert.equal(actual, expect);
+        });
+    });
+
+    describe('logs', function() {
+        beforeEach(function() {
+            this.sinon.stub(console, 'warn');
+
+            fsMock({
+                'gulpfile.js': ''
+            });
+        });
+
+        it('on incorrect JS option', function() {
+            var config = Object.freeze({
+                'devServer': false,
+                'jsOptions': ['incorrectOption'],
+                'jsDistSource': 'src/scripts',
+                'jsDistDest': 'dist/scripts',
+                'cssPreProcessorType': 'none',
+                'cssOptions': [],
+                'cssDistSource': 'src/styles',
+                'cssDistDest': 'dist/styles',
+                'outputDependencies': false
+            });
+            generator(config);
+
+            assert(console.warn.calledOnce);
+            assert(console.warn.calledWith('Option [incorrectOption] is not a valid JS option'));
+        });
+
+        it('on incorrect CSS option', function() {
+            var config = Object.freeze({
+                'devServer': false,
+                'jsOptions': [],
+                'jsDistSource': 'src/scripts',
+                'jsDistDest': 'dist/scripts',
+                'cssPreProcessorType': 'none',
+                'cssOptions': ['incorrectOption'],
+                'cssDistSource': 'src/styles',
+                'cssDistDest': 'dist/styles',
+                'outputDependencies': false
+            });
+            generator(config);
+
+            assert(console.warn.calledOnce);
+            assert(console.warn.calledWith('Option [incorrectOption] is not a valid CSS option'));
         });
     });
 
