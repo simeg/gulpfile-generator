@@ -5,8 +5,7 @@
 ## Installation
 ```bash
 npm install -g gulpfile-generator
-```
-`gulpfile-generator` only has one external dependency (not counting `node`), so you won't clogger your global `node_modules` folder for this small tool. 
+``` 
 
 ## Usage
 ```bash
