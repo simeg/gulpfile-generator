@@ -7,12 +7,16 @@ var fs = require('fs');
 var fsMock = require('mock-fs');
 var generator = Object.freeze(require('./../source/generator.js'));
 require('mocha-sinon');
+var utils = require('./testUtils.js');
 
 describe('generator', function() {
 
     after(function() {
         fsMock.restore();
     });
+
+    // TODO: getDefaultConfig()
+    // TODO: getCurrentFileContent()
 
     describe('generates a gulpfile.js', function() {
 
@@ -82,7 +86,7 @@ describe('generator', function() {
                 'cssDistDest': 'dist/styles',
                 'outputDependencies': false
             };
-            generator(config);
+            generator.generateFile(config);
         };
 
         var runTestUsingSingleIndex = function(type, jsObject, cssObject) {
@@ -97,9 +101,9 @@ describe('generator', function() {
                 } else if (type === 'css') {
                     generateFileWithOptions(null, [option]);
                 }
-                var stateAfter = fs.readFileSync('gulpfile.js', 'utf8');
+                var currentFileContent = fs.readFileSync('gulpfile.js', 'utf8');
 
-                if (result = (stateAfter.indexOf(code) === -1))
+                if (result = (currentFileContent.indexOf(code) === -1))
                     assert.fail(result, true, 'Code not found');
 
                 assert(true, 'Code for: [' + option + '] found');
@@ -121,12 +125,12 @@ describe('generator', function() {
                 } else if (type === 'css') {
                     generateFileWithOptions(null, [firstOption, secondOption]);
                 }
-                var stateAfter = fs.readFileSync('gulpfile.js', 'utf8');
+                var currentFileContent = fs.readFileSync('gulpfile.js', 'utf8');
 
-                if (result = (stateAfter.indexOf(firstCode) === -1))
+                if (result = (currentFileContent.indexOf(firstCode) === -1))
                     assert.fail(result, true, 'Code not found');
 
-                if (result = (stateAfter.indexOf(secondCode) === -1))
+                if (result = (currentFileContent.indexOf(secondCode) === -1))
                     assert.fail(result, true, 'Code not found');
 
                 assert(true, 'Code for: [' + firstOption + ' and ' + secondOption + '] found');
@@ -136,7 +140,7 @@ describe('generator', function() {
         describe('with default configuration', function() {
 
             beforeEach(function() {
-                generator(defaultConfig);
+                generator.generateFile(defaultConfig);
             });
 
             it('generates default imports', function() {
@@ -145,8 +149,8 @@ describe('generator', function() {
                     "var plumber = require('gulp-plumber');",
                     "var rename = require('gulp-rename');"
                 ];
-                var stateAfter = fs.readFileSync('gulpfile.js', 'utf8');
-                checkImports(stateAfter, defaultImports);
+                var currentFileContent = fs.readFileSync('gulpfile.js', 'utf8');
+                checkImports(currentFileContent, defaultImports);
             });
 
             it('generates default variables', function() {
@@ -157,8 +161,8 @@ describe('generator', function() {
                     "var CSS_SOURCE = 'src/styles';",
                     "var CSS_DEST = 'dist/styles';"
                 ];
-                var stateAfter = fs.readFileSync('gulpfile.js', 'utf8');
-                checkVariables(stateAfter, defaultVariables);
+                var currentFileContent = fs.readFileSync('gulpfile.js', 'utf8');
+                checkVariables(currentFileContent, defaultVariables);
             });
 
             it('generates default task', function() {
@@ -166,25 +170,25 @@ describe('generator', function() {
                 var nrOfWatchInTask = 1;
                 var searchTerm = '.watch(';
 
-                var stateAfter = fs.readFileSync('gulpfile.js', 'utf8');
+                var currentFileContent = fs.readFileSync('gulpfile.js', 'utf8');
 
-                checkUniqueStringOccurrences(stateAfter, taskDeclaration, nrOfWatchInTask, searchTerm);
+                checkUniqueStringOccurrences(currentFileContent, taskDeclaration, nrOfWatchInTask, searchTerm);
             });
 
             it('generates scripts task', function() {
                 var taskDeclaration = "gulp.task('scripts', function() {";
                 var nrOfPipelinesInTask = 2;
 
-                var stateAfter = fs.readFileSync('gulpfile.js', 'utf8');
+                var currentFileContent = fs.readFileSync('gulpfile.js', 'utf8');
 
                 var result;
-                if (result = (stateAfter.indexOf(taskDeclaration) === -1))
+                if (result = (currentFileContent.indexOf(taskDeclaration) === -1))
                     assert.fail(result, true, 'Scripts task not found');
 
                 var index = 0,
-                    startingIndex = stateAfter.indexOf(taskDeclaration);
+                    startingIndex = currentFileContent.indexOf(taskDeclaration);
                 for (var i = 0; i < nrOfPipelinesInTask; i++) {
-                    index = stateAfter.indexOf('.pipe(', index ? index : startingIndex);
+                    index = currentFileContent.indexOf('.pipe(', index ? index : startingIndex);
                     if (index === -1) {
                         assert.fail(false, true, 'Pipeline missing');
                     } else {
@@ -202,7 +206,7 @@ describe('generator', function() {
             beforeEach(function() {
                 var config = defaultConfig;
                 config.devServer = true;
-                generator(config);
+                generator.generateFile(config);
             });
 
             it('generates correct imports', function() {
@@ -212,8 +216,8 @@ describe('generator', function() {
                     "var rename = require('gulp-rename');",
                     "var browserSync = require('browser-sync');"
                 ];
-                var stateAfter = fs.readFileSync('gulpfile.js', 'utf8');
-                checkImports(stateAfter, correctImports);
+                var currentFileContent = fs.readFileSync('gulpfile.js', 'utf8');
+                checkImports(currentFileContent, correctImports);
             });
 
             it('generates correct variables', function() {
@@ -224,8 +228,8 @@ describe('generator', function() {
                     "var SERVER_BASE_DIR = './';",
                     "var WATCH_FILE_EXTENSIONS = ['*.html'];"
                 ];
-                var stateAfter = fs.readFileSync('gulpfile.js', 'utf8');
-                checkVariables(stateAfter, correctVariables);
+                var currentFileContent = fs.readFileSync('gulpfile.js', 'utf8');
+                checkVariables(currentFileContent, correctVariables);
             });
 
             it('generates browser-sync task', function() {
@@ -239,8 +243,8 @@ describe('generator', function() {
                     "});"
                 ];
 
-                var stateAfter = fs.readFileSync('gulpfile.js', 'utf8');
-                checkStringOccurrences(stateAfter, taskCodeLines);
+                var currentFileContent = fs.readFileSync('gulpfile.js', 'utf8');
+                checkStringOccurrences(currentFileContent, taskCodeLines);
             });
 
             it('generates correct default task', function() {
@@ -248,9 +252,9 @@ describe('generator', function() {
                 var nrOfWatchInTask = 2;
                 var searchTerm = '.watch(';
 
-                var stateAfter = fs.readFileSync('gulpfile.js', 'utf8');
+                var currentFileContent = fs.readFileSync('gulpfile.js', 'utf8');
 
-                checkUniqueStringOccurrences(stateAfter, taskDeclaration, nrOfWatchInTask, searchTerm);
+                checkUniqueStringOccurrences(currentFileContent, taskDeclaration, nrOfWatchInTask, searchTerm);
             });
         });
 
@@ -383,7 +387,7 @@ describe('generator', function() {
                         'cssDistDest': 'dist/styles',
                         'outputDependencies': false
                     };
-                    generator(config);
+                    generator.generateFile(config);
                 };
 
                 var runCssPreProcessorTypeTest = function(type, codeScope) {
@@ -462,7 +466,7 @@ describe('generator', function() {
                 'cssDistDest': 'dist/styles',
                 'outputDependencies': true
             });
-            generator(emptyDependenciesConfig);
+            generator.generateFile(emptyDependenciesConfig);
             var actual = fs.readFileSync('install-dependencies.txt', 'utf8');
             var expect = 'npm install --save-dev gulp gulp-plumber gulp-rename';
             assert.equal(actual, expect);
@@ -480,7 +484,7 @@ describe('generator', function() {
                 'cssDistDest': 'dist/styles',
                 'outputDependencies': true
             });
-            generator(installDependenciesConfig);
+            generator.generateFile(installDependenciesConfig);
             var actual = fs.readFileSync('install-dependencies.txt', 'utf8');
             var expect = 'npm install --save-dev gulp gulp-plumber gulp-rename gulp-jshint gulp-babel gulp-uglify browser-sync';
             assert.equal(actual, expect);
@@ -508,7 +512,7 @@ describe('generator', function() {
                 'cssDistDest': 'dist/styles',
                 'outputDependencies': false
             });
-            generator(config);
+            generator.generateFile(config);
 
             assert(console.warn.calledOnce);
             assert(console.warn.calledWith('Option [incorrectOption] is not a valid JS option'));
@@ -526,14 +530,116 @@ describe('generator', function() {
                 'cssDistDest': 'dist/styles',
                 'outputDependencies': false
             });
-            generator(config);
+            generator.generateFile(config);
 
             assert(console.warn.calledOnce);
             assert(console.warn.calledWith('Option [incorrectOption] is not a valid CSS option'));
         });
     });
 
-    describe('is sorting properly', function() {
-        // TODO: how?
+    describe('sorts', function() {
+        beforeEach(function() {
+            fsMock({
+                'gulpfile.js': ''
+            });
+        });
+
+        it('JS pipeline tasks', function() {
+            var jsOptions =
+                utils.shuffleArray(['jshint', 'concat', 'dest',
+                    'babel', 'uglify', 'browserSync', 'coffee']);
+            var config = {
+                'devServer': false,
+                'jsOptions': jsOptions,
+                'jsDistSource': 'src/scripts',
+                'jsDistDest': 'dist/scripts',
+                'cssPreProcessorType': 'none',
+                'cssOptions': [],
+                'cssDistSource': 'src/styles',
+                'cssDistDest': 'dist/styles',
+                'outputDependencies': false
+            };
+            generator.generateFile(config);
+            
+            var sortOrder = 
+                Object.freeze(require('./../source/generator.config.json').sortOrders.js);
+
+            var prevIndex, currIndex,
+                currentFileContent = fs.readFileSync('gulpfile.js', 'utf8'),
+                startIndex = currentFileContent.indexOf("gulp.task('scripts'"),
+                limitIndex = currentFileContent.indexOf("});", startIndex);
+            for (var i = 0; i < sortOrder.length; i++) {
+                var moduleName = sortOrder[i];
+                var moduleCode = generator.getJsOptionCode(moduleName);
+                currIndex = currentFileContent.indexOf(moduleCode, startIndex);
+
+                if (i === 0) {
+                    prevIndex = currIndex;
+                    continue;
+                }
+
+                if (currIndex >= limitIndex)
+                    assert.fail(null, null,
+                        'Limit index reached. JS option [' + moduleName + '] not found ' +
+                        'within valid scope');
+
+                if (currIndex < prevIndex) {
+                    assert.fail(null, null, 'JS option [' + moduleName + '] is not sorted');
+                } else if (currIndex > prevIndex && currIndex < limitIndex) {
+                    prevIndex = currIndex;
+                }
+            }
+
+            assert.ok(true, 'JS options are sorted');
+        });
+
+        it('CSS pipeline tasks', function() {
+            var cssOptions =
+                utils.shuffleArray(['less', 'stylus', 'autoprefixer',
+                    'minifycss', 'sass', 'browserSync']);
+            var config = {
+                'devServer': false,
+                'jsOptions': [],
+                'jsDistSource': 'src/scripts',
+                'jsDistDest': 'dist/scripts',
+                'cssPreProcessorType': 'none',
+                'cssOptions': cssOptions,
+                'cssDistSource': 'src/styles',
+                'cssDistDest': 'dist/styles',
+                'outputDependencies': false
+            };
+            generator.generateFile(config);
+
+            var sortOrder =
+                Object.freeze(require('./../source/generator.config.json').sortOrders.css);
+
+            var prevIndex, currIndex,
+                currentFileContent = fs.readFileSync('gulpfile.js', 'utf8'),
+                startIndex = currentFileContent.indexOf("gulp.task('styles'"),
+                limitIndex = currentFileContent.indexOf("});", startIndex);
+            for (var i = 0; i < sortOrder.length; i++) {
+                var moduleName = sortOrder[i];
+                var moduleCode = generator.getCssOptionCode(moduleName);
+                currIndex = currentFileContent.indexOf(moduleCode, startIndex);
+
+                if (i === 0) {
+                    prevIndex = currIndex;
+                    continue;
+                }
+
+                if (currIndex >= limitIndex)
+                    assert.fail(null, null,
+                        'Limit index reached. CSS option [' + moduleName + '] not found ' +
+                        'within valid scope');
+
+                if (currIndex < prevIndex) {
+                    assert.fail(null, null, 'CSS option [' + moduleName + '] is not sorted');
+                } else if (currIndex > prevIndex && currIndex < limitIndex) {
+                    prevIndex = currIndex;
+                }
+            }
+
+            assert.ok(true, 'CSS options are sorted');
+        });
     });
 });

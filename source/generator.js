@@ -292,4 +292,6 @@ var generator = {
     }
 };
 
-module.exports = generator.generateFile;
+// Export whole generator object if test build, this
+// makes it possible to test private methods
+module.exports = process.env.NODE_ENV === 'test' ? generator : generator.generateFile;
