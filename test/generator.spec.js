@@ -140,9 +140,9 @@ describe('generator', function() {
 
             it('generates default imports', function() {
                 var defaultImports = [
-                    "var gulp = require('gulp'),",
-                    "plumber = require('gulp-plumber'),",
-                    "rename = require('gulp-rename');"
+                    "var gulp = require('gulp');",
+                    "var plumber = require('gulp-plumber');",
+                    "var rename = require('gulp-rename');"
                 ];
                 var stateAfter = fs.readFileSync('gulpfile.js', 'utf8');
                 checkImports(stateAfter, defaultImports);
@@ -206,9 +206,9 @@ describe('generator', function() {
 
             it('generates correct imports', function() {
                 var correctImports = [
-                    "var gulp = require('gulp'),",
-                    "plumber = require('gulp-plumber'),",
-                    "rename = require('gulp-rename');",
+                    "var gulp = require('gulp');",
+                    "var plumber = require('gulp-plumber');",
+                    "var rename = require('gulp-rename');",
                     "var browserSync = require('browser-sync');"
                 ];
                 var stateAfter = fs.readFileSync('gulpfile.js', 'utf8');
@@ -463,7 +463,7 @@ describe('generator', function() {
             });
             generator(emptyDependenciesConfig);
             var actual = fs.readFileSync('install-dependencies.txt', 'utf8');
-            var expect = 'npm install --save-dev ';
+            var expect = 'npm install --save-dev gulp gulp-plumber gulp-rename';
             assert.equal(actual, expect);
         });
 
@@ -481,7 +481,7 @@ describe('generator', function() {
             });
             generator(installDependenciesConfig);
             var actual = fs.readFileSync('install-dependencies.txt', 'utf8');
-            var expect = 'npm install --save-dev gulp-jshint gulp-babel gulp-uglify browser-sync';
+            var expect = 'npm install --save-dev gulp gulp-plumber gulp-rename gulp-jshint gulp-babel gulp-uglify browser-sync';
             assert.equal(actual, expect);
         });
     });

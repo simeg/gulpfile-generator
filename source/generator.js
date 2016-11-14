@@ -4,6 +4,7 @@
 var fs = require('fs');
 var sortOrders = Object.freeze(require('./generator.config.json').sortOrders);
 var moduleNames = Object.freeze(require('./generator.config.json').moduleNames);
+var defaultModules = Object.freeze(require('./generator.config.json').defaultModules);
 
 var generator = {
     generateFile: function(options) {
@@ -70,15 +71,12 @@ var generator = {
         g.writeToFile('gulpfile.js', content);
     },
     getImports: function(options) {
-        var indentationBase = '    ';
-        var i = indentationBase;
-        var content = "var gulp = require('gulp'),\n" +
-            i + "plumber = require('gulp-plumber'),\n" +
-            i + "rename = require('gulp-rename');\n";
+        var content = '',
+            modules = defaultModules.concat(options);
 
         // Add gulp imports (in top of file)
-        for (var j = 0; j < options.length; j++) {
-            var importName = options[j];
+        for (var j = 0; j < modules.length; j++) {
+            var importName = modules[j];
             var gulpImport = generator.getModulePath(importName);
             if (gulpImport)
                 content += "var " + importName + " = require('" + gulpImport + "');\n";
@@ -276,8 +274,9 @@ var generator = {
         });
     },
     generateDependencyFile: function(options) {
+        var allOptions = defaultModules.concat(options);
         // Filter out non-valid dependencies
-        var dependencies = options.reduce(function(dependencies, option) {
+        var dependencies = allOptions.reduce(function(dependencies, option) {
             var dependency = generator.getModulePath(option);
             if (dependency)
                 dependencies.push(dependency);

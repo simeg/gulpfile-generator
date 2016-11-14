@@ -1,13 +1,21 @@
 {
+  "defaultModules": [
+    "gulp",
+    "plumber",
+    "rename"
+  ],
   "moduleNames": {
     "autoprefixer": "gulp-autoprefixer",
     "babel": "gulp-babel",
     "browserSync": "browser-sync",
     "coffee": "gulp-coffee",
     "concat": "gulp-concat",
+    "gulp": "gulp",
     "jshint": "gulp-jshint",
     "less": "gulp-less",
     "minifycss": "gulp-minify-css",
+    "plumber": "gulp-plumber",
+    "rename": "gulp-rename",
     "sass": "gulp-sass",
     "stylus": "gulp-stylus",
     "uglify": "gulp-uglify"
