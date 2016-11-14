@@ -11,39 +11,12 @@ var generator = {
         // console.log(JSON.stringify(options, null, '  '));
         var g = generator;
 
-        var devServer,
-            jsObject = {},
-            cssObject = {};
-
-        devServer = options.devServer;
-
-        jsObject.options = options.jsOptions;
-        jsObject.source = options.jsDistSource;
-        jsObject.dest = options.jsDistDest;
-        jsObject.sortType = 'js';
-
-        if (devServer)
-            jsObject.options.push('browserSync');
-        jsObject.options.push('dest');
-
-        cssObject.options = options.cssOptions;
-        cssObject.source = options.cssDistSource;
-        cssObject.dest = options.cssDistDest;
-        cssObject.preProcessorType = options.cssPreProcessorType;
-        cssObject.sortType = 'css';
-        var includeCss = (cssObject.options.length > 0) || (cssObject.preProcessorType !== 'none');
-
-        if (includeCss) {
-            if (devServer)
-                cssObject.options.push('browserSync');
-            cssObject.options.push('dest');
-
-            if (cssObject.preProcessorType !== 'none')
-                cssObject.options.push(cssObject.preProcessorType);
-        }
+        var devServer = options.devServer,
+            jsObject = g.getJsOptions(options),
+            cssObject = g.getCssOptions(options);
 
         var sortedJsOptions = g.sortOptions(jsObject);
-        var sortedCssOptions = includeCss ? g.sortOptions(cssObject) : [];
+        var sortedCssOptions = g.sortOptions(cssObject);
 
         var content;
         var totalOptions = sortedJsOptions.concat(sortedCssOptions);
@@ -69,6 +42,41 @@ var generator = {
             g.generateDependencyFile(sortedJsOptions);
 
         g.writeToFile('gulpfile.js', content);
+    },
+    getJsOptions: function(userSelectedOptions) {
+        var optionsObj = {};
+        optionsObj.options = userSelectedOptions.jsOptions;
+        optionsObj.source = userSelectedOptions.jsDistSource;
+        optionsObj.dest = userSelectedOptions.jsDistDest;
+        optionsObj.sortType = 'js';
+
+        if (userSelectedOptions.devServer)
+            optionsObj.options.push('browserSync');
+        optionsObj.options.push('dest');
+
+        return optionsObj;
+    },
+    getCssOptions: function(userSelectedOptions) {
+        if ((userSelectedOptions.cssOptions.length > 0) &&
+            (userSelectedOptions.preProcessorType === 'none'))
+            return {};
+
+        var optionsObj = {};
+
+        optionsObj.options = userSelectedOptions.cssOptions;
+        optionsObj.source = userSelectedOptions.cssDistSource;
+        optionsObj.dest = userSelectedOptions.cssDistDest;
+        optionsObj.preProcessorType = userSelectedOptions.cssPreProcessorType;
+        optionsObj.sortType = 'css';
+
+        if (userSelectedOptions.devServer)
+            optionsObj.options.push('browserSync');
+        optionsObj.options.push('dest');
+
+        if (optionsObj.preProcessorType !== 'none')
+            optionsObj.options.push(optionsObj.preProcessorType);
+
+        return optionsObj;
     },
     getImports: function(options) {
         var content = '',
