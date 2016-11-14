@@ -27,7 +27,7 @@
     "gulpfile-generator": "source/cli.js"
   },
   "scripts": {
-    "test": "gulp"
+    "test": "NODE_ENV=test gulp"
   },
   "dependencies": {
     "cli-list": "^0.2.0",
