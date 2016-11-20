@@ -41,14 +41,14 @@
       "type": "input",
       "name": "jsDistSource",
       "message": "JS source destination",
-      "default": "src/scripts",
+      "default": "src/javascript",
       "filter": "formatDist"
     },
     {
       "type": "input",
       "name": "jsDistDest",
       "message": "JS build destination",
-      "default": "dist/scripts",
+      "default": "dist/javascript",
       "filter": "formatDist"
     },
     {
@@ -99,14 +99,14 @@
       "type": "input",
       "name": "cssDistSource",
       "message": "CSS source destination",
-      "default": "src/styles",
+      "default": "src/css",
       "filter": "formatDist"
     },
     {
       "type": "input",
       "name": "cssDistDest",
       "message": "CSS build destination",
-      "default": "dist/styles",
+      "default": "dist/css",
       "filter": "formatDist"
     },
     {

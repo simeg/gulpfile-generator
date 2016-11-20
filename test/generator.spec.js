@@ -15,8 +15,23 @@ describe('generator', function() {
         fsMock.restore();
     });
 
-    // TODO: getDefaultConfig()
-    // TODO: getCurrentFileContent()
+    var getDefaultConfig = function() {
+        return Object.seal({
+            'devServer': false,
+            'jsOptions': [],
+            'jsDistSource': 'src/scripts',
+            'jsDistDest': 'dist/scripts',
+            'cssPreProcessorType': 'none',
+            'cssOptions': [],
+            'cssDistSource': 'src/styles',
+            'cssDistDest': 'dist/styles',
+            'outputDependencies': false
+        });
+    };
+
+    var getCurrentFileContent = function() {
+        return fs.readFileSync('gulpfile.js', 'utf8');
+    };
 
     describe('generates a gulpfile.js', function() {
 
@@ -26,22 +41,12 @@ describe('generator', function() {
                 'gulpfile.js': ''
             });
 
-            defaultConfig = Object.seal({
-                'devServer': false,
-                'jsOptions': [],
-                'jsDistSource': 'src/scripts',
-                'jsDistDest': 'dist/scripts',
-                'cssPreProcessorType': 'none',
-                'cssOptions': [],
-                'cssDistSource': 'src/styles',
-                'cssDistDest': 'dist/styles',
-                'outputDependencies': false
-            });
+            defaultConfig = getDefaultConfig();
         });
 
-        var checkUniqueStringOccurrences = function(haystack, startingPoint, count, string) {
+        var assertUniqueStringOccurrences = function(haystack, strStartingPoint, count, string) {
             var index = 0,
-                startingIndex = haystack.indexOf(startingPoint);
+                startingIndex = haystack.indexOf(strStartingPoint);
             for (var i = 0; i < count; i++) {
                 index = haystack.indexOf(string, index ? index : startingIndex);
                 if (index === -1) {
@@ -55,7 +60,7 @@ describe('generator', function() {
             assert(true, 'All strings found');
         };
 
-        var checkStringOccurrences = function(haystack, needleArray) {
+        var assertStringOccurrences = function(haystack, needleArray) {
             var string, result;
             for (var i = 0; i < needleArray.length; i++) {
                 string = needleArray[i];
@@ -66,26 +71,18 @@ describe('generator', function() {
             assert(true, 'All string occurrences found');
         };
 
-        var checkImports = function(gulpFile, imports) {
-            checkStringOccurrences(gulpFile, imports);
+        var assertImports = function(gulpFile, imports) {
+            assertStringOccurrences(gulpFile, imports);
         };
 
-        var checkVariables = function(gulpFile, variables) {
-            checkStringOccurrences(gulpFile, variables);
+        var assertVariables = function(gulpFile, variables) {
+            assertStringOccurrences(gulpFile, variables);
         };
 
         var generateFileWithOptions = function(jsOptions, cssOptions) {
-            var config = {
-                'devServer': false,
-                'jsOptions': jsOptions || [],
-                'jsDistSource': 'src/scripts',
-                'jsDistDest': 'dist/scripts',
-                'cssPreProcessorType': 'none',
-                'cssOptions': cssOptions || [],
-                'cssDistSource': 'src/styles',
-                'cssDistDest': 'dist/styles',
-                'outputDependencies': false
-            };
+            var config = getDefaultConfig();
+            config.jsOptions = jsOptions || [];
+            config.cssOptions = cssOptions || [];
             generator.generateFile(config);
         };
 
@@ -101,10 +98,10 @@ describe('generator', function() {
                 } else if (type === 'css') {
                     generateFileWithOptions(null, [option]);
                 }
-                var currentFileContent = fs.readFileSync('gulpfile.js', 'utf8');
+                var currentFileContent = getCurrentFileContent();
 
                 if (result = (currentFileContent.indexOf(code) === -1))
-                    assert.fail(result, true, 'Code not found');
+                    assert.fail(result, true, 'Code not found'); // TODO: Log more info than this
 
                 assert(true, 'Code for: [' + option + '] found');
             });
@@ -125,7 +122,7 @@ describe('generator', function() {
                 } else if (type === 'css') {
                     generateFileWithOptions(null, [firstOption, secondOption]);
                 }
-                var currentFileContent = fs.readFileSync('gulpfile.js', 'utf8');
+                var currentFileContent = getCurrentFileContent();
 
                 if (result = (currentFileContent.indexOf(firstCode) === -1))
                     assert.fail(result, true, 'Code not found');
@@ -144,16 +141,18 @@ describe('generator', function() {
             });
 
             it('generates default imports', function() {
+                // TODO: Add getDefaultImports()
                 var defaultImports = [
                     "var gulp = require('gulp');",
                     "var plumber = require('gulp-plumber');",
                     "var rename = require('gulp-rename');"
                 ];
-                var currentFileContent = fs.readFileSync('gulpfile.js', 'utf8');
-                checkImports(currentFileContent, defaultImports);
+                var currentFileContent = getCurrentFileContent();
+                assertImports(currentFileContent, defaultImports);
             });
 
             it('generates default variables', function() {
+                // TODO: Add getDefaultVariables()
                 var defaultVariables = [
                     "var JS_SOURCE = 'src/scripts'",
                     "var JS_DEST = 'dist/scripts'",
@@ -161,8 +160,8 @@ describe('generator', function() {
                     "var CSS_SOURCE = 'src/styles';",
                     "var CSS_DEST = 'dist/styles';"
                 ];
-                var currentFileContent = fs.readFileSync('gulpfile.js', 'utf8');
-                checkVariables(currentFileContent, defaultVariables);
+                var currentFileContent = getCurrentFileContent();
+                assertVariables(currentFileContent, defaultVariables);
             });
 
             it('generates default task', function() {
@@ -170,16 +169,16 @@ describe('generator', function() {
                 var nrOfWatchInTask = 1;
                 var searchTerm = '.watch(';
 
-                var currentFileContent = fs.readFileSync('gulpfile.js', 'utf8');
+                var currentFileContent = getCurrentFileContent();
 
-                checkUniqueStringOccurrences(currentFileContent, taskDeclaration, nrOfWatchInTask, searchTerm);
+                assertUniqueStringOccurrences(currentFileContent, taskDeclaration, nrOfWatchInTask, searchTerm);
             });
 
             it('generates scripts task', function() {
                 var taskDeclaration = "gulp.task('javascript', function() {";
                 var nrOfPipelinesInTask = 2;
 
-                var currentFileContent = fs.readFileSync('gulpfile.js', 'utf8');
+                var currentFileContent = getCurrentFileContent();
 
                 var result;
                 if (result = (currentFileContent.indexOf(taskDeclaration) === -1))
@@ -190,7 +189,7 @@ describe('generator', function() {
                 for (var i = 0; i < nrOfPipelinesInTask; i++) {
                     index = currentFileContent.indexOf('.pipe(', index ? index : startingIndex);
                     if (index === -1) {
-                        assert.fail(false, true, 'Pipeline missing');
+                        assert.fail(false, true, 'Pipeline missing'); // TODO: Log more info?
                     } else {
                         // Increment to not find same pipeline string again
                         index++;
@@ -216,8 +215,8 @@ describe('generator', function() {
                     "var rename = require('gulp-rename');",
                     "var browserSync = require('browser-sync');"
                 ];
-                var currentFileContent = fs.readFileSync('gulpfile.js', 'utf8');
-                checkImports(currentFileContent, correctImports);
+                var currentFileContent = getCurrentFileContent();
+                assertImports(currentFileContent, correctImports);
             });
 
             it('generates correct variables', function() {
@@ -228,8 +227,8 @@ describe('generator', function() {
                     "var SERVER_BASE_DIR = './';",
                     "var WATCH_FILE_EXTENSIONS = ['*.html'];"
                 ];
-                var currentFileContent = fs.readFileSync('gulpfile.js', 'utf8');
-                checkVariables(currentFileContent, correctVariables);
+                var currentFileContent = getCurrentFileContent();
+                assertVariables(currentFileContent, correctVariables);
             });
 
             it('generates browser-sync task', function() {
@@ -243,8 +242,8 @@ describe('generator', function() {
                     "});"
                 ];
 
-                var currentFileContent = fs.readFileSync('gulpfile.js', 'utf8');
-                checkStringOccurrences(currentFileContent, taskCodeLines);
+                var currentFileContent = getCurrentFileContent();
+                assertStringOccurrences(currentFileContent, taskCodeLines);
             });
 
             it('generates correct default task', function() {
@@ -252,9 +251,9 @@ describe('generator', function() {
                 var nrOfWatchInTask = 2;
                 var searchTerm = '.watch(';
 
-                var currentFileContent = fs.readFileSync('gulpfile.js', 'utf8');
+                var currentFileContent = getCurrentFileContent();
 
-                checkUniqueStringOccurrences(currentFileContent, taskDeclaration, nrOfWatchInTask, searchTerm);
+                assertUniqueStringOccurrences(currentFileContent, taskDeclaration, nrOfWatchInTask, searchTerm);
             });
         });
 
@@ -289,6 +288,11 @@ describe('generator', function() {
                 "    .pipe(uglify())",
                 ".pipe(browserSync.reload({stream:true}))"
             ];
+
+            // TODO: Write this test
+            it('returns empty JS object when nothing to generate', function() {
+                // TODO
+            });
 
             describe('using only one option', function() {
                 var jsObject = {
@@ -387,17 +391,8 @@ describe('generator', function() {
 
             describe('with pre processor types', function() {
                 var generateFileWithCssPreProcessorType = function(type) {
-                    var config = {
-                        'devServer': false,
-                        'jsOptions': [],
-                        'jsDistSource': 'src/scripts',
-                        'jsDistDest': 'dist/scripts',
-                        'cssPreProcessorType': type,
-                        'cssOptions': [],
-                        'cssDistSource': 'src/styles',
-                        'cssDistDest': 'dist/styles',
-                        'outputDependencies': false
-                    };
+                    var config = getDefaultConfig();
+                    config.cssPreProcessorType = type;
                     generator.generateFile(config);
                 };
 
@@ -406,7 +401,7 @@ describe('generator', function() {
                     it(type, function() {
                         generateFileWithCssPreProcessorType(type);
 
-                        currentFileContent = fs.readFileSync('gulpfile.js', 'utf8');
+                        currentFileContent = getCurrentFileContent();
 
                         if (result = (currentFileContent.indexOf(codeScope) === -1))
                             assert.fail(result, true, 'Code not found');
@@ -443,7 +438,7 @@ describe('generator', function() {
                     // Check to see that there's no sign of any pre-processor
                     for (var i = 0; i < generatedCode.length; i++) {
                         var codeSnippet = generatedCode[i];
-                        currentFileContent = fs.readFileSync('gulpfile.js', 'utf8');
+                        currentFileContent = getCurrentFileContent();
                         result = (currentFileContent.indexOf(codeSnippet) === -1);
                         if (!result) {
                             assert.fail(result, false, '[' + codeSnippet + '] is in the code, ' +
@@ -466,38 +461,27 @@ describe('generator', function() {
         });
 
         it('with no dependencies selected', function() {
-            var emptyDependenciesConfig = Object.freeze({
-                'devServer': false,
-                'jsOptions': [],
-                'jsDistSource': 'irrelevantValue',
-                'jsDistDest': 'irrelevantValue',
-                'cssPreProcessorType': 'none',
-                'cssOptions': [],
-                'cssDistSource': 'src/styles',
-                'cssDistDest': 'dist/styles',
-                'outputDependencies': true
-            });
+            var emptyDependenciesConfig = getDefaultConfig();
+            emptyDependenciesConfig.outputDependencies = true;
             generator.generateFile(emptyDependenciesConfig);
+
             var actual = fs.readFileSync('install-dependencies.txt', 'utf8');
+
             var expect = 'npm install --save-dev gulp gulp-plumber gulp-rename';
             assert.equal(actual, expect);
         });
 
         it('containing selected dependencies', function() {
-            var installDependenciesConfig = Object.freeze({
-                'devServer': true,
-                'jsOptions': ['uglify', 'babel', 'jshint'],
-                'jsDistSource': 'irrelevantValue',
-                'jsDistDest': 'irrelevantValue',
-                'cssPreProcessorType': 'none',
-                'cssOptions': [],
-                'cssDistSource': 'src/styles',
-                'cssDistDest': 'dist/styles',
-                'outputDependencies': true
-            });
+            var installDependenciesConfig = getDefaultConfig();
+            installDependenciesConfig.jsOptions = ['uglify', 'babel', 'jshint'];
+            installDependenciesConfig.outputDependencies = true;
+            installDependenciesConfig.devServer = true;
             generator.generateFile(installDependenciesConfig);
+
             var actual = fs.readFileSync('install-dependencies.txt', 'utf8');
-            var expect = 'npm install --save-dev gulp gulp-plumber gulp-rename gulp-jshint gulp-babel gulp-uglify browser-sync';
+
+            var expect = 'npm install --save-dev gulp gulp-plumber gulp-rename gulp-jshint ' +
+                'gulp-babel gulp-uglify browser-sync';
             assert.equal(actual, expect);
         });
     });
@@ -512,17 +496,8 @@ describe('generator', function() {
         });
 
         it('on incorrect JS option', function() {
-            var config = Object.freeze({
-                'devServer': false,
-                'jsOptions': ['incorrectOption'],
-                'jsDistSource': 'src/scripts',
-                'jsDistDest': 'dist/scripts',
-                'cssPreProcessorType': 'none',
-                'cssOptions': [],
-                'cssDistSource': 'src/styles',
-                'cssDistDest': 'dist/styles',
-                'outputDependencies': false
-            });
+            var config = getDefaultConfig();
+            config.jsOptions = ['incorrectOption'];
             generator.generateFile(config);
 
             assert(console.warn.calledOnce);
@@ -530,17 +505,8 @@ describe('generator', function() {
         });
 
         it('on incorrect CSS option', function() {
-            var config = Object.freeze({
-                'devServer': false,
-                'jsOptions': [],
-                'jsDistSource': 'src/scripts',
-                'jsDistDest': 'dist/scripts',
-                'cssPreProcessorType': 'none',
-                'cssOptions': ['incorrectOption'],
-                'cssDistSource': 'src/styles',
-                'cssDistDest': 'dist/styles',
-                'outputDependencies': false
-            });
+            var config = getDefaultConfig();
+            config.cssOptions = ['incorrectOption'];
             generator.generateFile(config);
 
             assert(console.warn.calledOnce);
@@ -565,20 +531,10 @@ describe('generator', function() {
         });
 
         it('JS pipeline tasks', function() {
-            var jsOptions =
-                utils.shuffleArray(['jshint', 'concat', 'dest',
-                    'babel', 'uglify', 'browserSync', 'coffee']);
-            var config = {
-                'devServer': false,
-                'jsOptions': jsOptions,
-                'jsDistSource': 'src/scripts',
-                'jsDistDest': 'dist/scripts',
-                'cssPreProcessorType': 'none',
-                'cssOptions': [],
-                'cssDistSource': 'src/styles',
-                'cssDistDest': 'dist/styles',
-                'outputDependencies': false
-            };
+            var config = getDefaultConfig();
+            config.jsOptions = utils.shuffleArray(['jshint', 'concat', 'dest',
+                'babel', 'uglify', 'browserSync', 'coffee']);
+            config.devServer = true;
             generator.generateFile(config);
             
             var sortOrder = 
@@ -614,20 +570,10 @@ describe('generator', function() {
         });
 
         it('CSS pipeline tasks', function() {
-            var cssOptions =
+            var config = getDefaultConfig();
+            config.cssOptions =
                 utils.shuffleArray(['less', 'stylus', 'autoprefixer',
                     'minifycss', 'sass', 'browserSync']);
-            var config = {
-                'devServer': false,
-                'jsOptions': [],
-                'jsDistSource': 'src/scripts',
-                'jsDistDest': 'dist/scripts',
-                'cssPreProcessorType': 'none',
-                'cssOptions': cssOptions,
-                'cssDistSource': 'src/styles',
-                'cssDistDest': 'dist/styles',
-                'outputDependencies': false
-            };
             generator.generateFile(config);
 
             var sortOrder =
