@@ -176,7 +176,7 @@ describe('generator', function() {
             });
 
             it('generates scripts task', function() {
-                var taskDeclaration = "gulp.task('scripts', function() {";
+                var taskDeclaration = "gulp.task('javascript', function() {";
                 var nrOfPipelinesInTask = 2;
 
                 var currentFileContent = fs.readFileSync('gulpfile.js', 'utf8');
@@ -586,7 +586,7 @@ describe('generator', function() {
 
             var prevIndex, currIndex,
                 currentFileContent = fs.readFileSync('gulpfile.js', 'utf8'),
-                startIndex = currentFileContent.indexOf("gulp.task('scripts'"),
+                startIndex = currentFileContent.indexOf("gulp.task('javascript'"),
                 limitIndex = currentFileContent.indexOf("});", startIndex);
             for (var i = 0; i < sortOrder.length; i++) {
                 var moduleName = sortOrder[i];
