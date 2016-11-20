@@ -20,7 +20,7 @@ gulp.task('json', ['set-test-env'], function(cb) {
     cb();
 });
 
-gulp.task('static', function() {
+gulp.task('lint', function() {
     gulp.src('source/*.js')
         .pipe(excludeGitignore())
         .pipe(eslint())
@@ -43,4 +43,4 @@ gulp.task('test', ['set-test-env'], function(cb) {
         });
 });
 
-gulp.task('default', ['set-test-env', 'json', 'static', 'test']);
+gulp.task('default', ['set-test-env', 'json', 'lint', 'test']);
