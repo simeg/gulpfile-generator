@@ -129,7 +129,7 @@ var generator = {
                 i + i + i + i + "generator.emit('end');\n" + i + i + "}}))\n";
         }
 
-        var content = "gulp.task('styles', function() {\n" +
+        var content = "gulp.task('css', function() {\n" +
             (preProcessing ? preProcessing : '');
 
         // Add gulp pipeline tasks
@@ -193,7 +193,7 @@ var generator = {
 
         if (styleExtension)
             var styleWatchRow = i + "gulp.watch(CSS_SOURCE + '/**/*" + styleExtension +
-                "', ['styles']);" + "\n";
+                "', ['css']);" + "\n";
 
         return (
             "gulp.task('default', " + (isDevServer ? "['browser-sync'], " : '') + "function() {\n" +

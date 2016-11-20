@@ -635,7 +635,7 @@ describe('generator', function() {
 
             var prevIndex, currIndex,
                 currentFileContent = fs.readFileSync('gulpfile.js', 'utf8'),
-                startIndex = currentFileContent.indexOf("gulp.task('styles'"),
+                startIndex = currentFileContent.indexOf("gulp.task('css"),
                 limitIndex = currentFileContent.indexOf("});", startIndex);
             for (var i = 0; i < sortOrder.length; i++) {
                 var moduleName = sortOrder[i];
