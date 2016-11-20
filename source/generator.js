@@ -81,12 +81,15 @@ var generator = {
         var content = '',
             modules = defaultModules.concat(options);
 
-        // Add gulp imports (in top of file)
+        // Add unique gulp imports (in top of file)
+        var tempGulpImports = [];
         for (var j = 0; j < modules.length; j++) {
             var importName = modules[j];
             var gulpImport = generator.getModulePath(importName);
-            if (gulpImport)
+            if (gulpImport && tempGulpImports.indexOf(gulpImport) === -1) {
+                tempGulpImports.push(gulpImport);
                 content += "var " + importName + " = require('" + gulpImport + "');\n";
+            }
         }
 
         return content;
@@ -287,6 +290,7 @@ var generator = {
 
             return dependencies;
         }, []);
+        console.log(dependencies);
         var npmInstallStr = 'npm install --save-dev ' + dependencies.join(' ');
         generator.writeToFile('install-dependencies.txt', npmInstallStr);
     }
