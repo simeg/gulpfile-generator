@@ -227,7 +227,7 @@ var generator = {
         case 'stylus':
             return ".pipe(stylus())";
         default:
-            console.warn('Option [' + name + '] is not a valid CSS option');
+            console.warn('Option [' + name + '] is not a valid CSS option'); // eslint-disable-line
             return null;
         }
     },
@@ -251,7 +251,7 @@ var generator = {
                 "    .pipe(rename({suffix: '.min'}))\n" +
                 "    .pipe(uglify())";
         default:
-            console.warn('Option [' + name + '] is not a valid JS option');
+            console.warn('Option [' + name + '] is not a valid JS option'); // eslint-disable-line
             return null;
         }
     },
@@ -267,7 +267,7 @@ var generator = {
                 "gulp.task('bs-reload', function() {\n" +
                 i + "browserSync.reload();\n" + "});\n";
         default:
-            console.warn('Type [' + type + '] is not a valid custom code option');
+            console.warn('Type [' + type + '] is not a valid custom code option'); // eslint-disable-line
             return null;
         }
     },
@@ -290,7 +290,6 @@ var generator = {
 
             return dependencies;
         }, []);
-        console.log(dependencies);
         var npmInstallStr = 'npm install --save-dev ' + dependencies.join(' ');
         generator.writeToFile('install-dependencies.txt', npmInstallStr);
     }
