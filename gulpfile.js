@@ -16,14 +16,14 @@ gulp.task('static', function() {
         .pipe(eslint.failAfterError());
 });
 
-gulp.task('json', function(cb) {
+gulp.task('json', ['set-test-env'], function(cb) {
     gulp.src(["**/*.json", "!./node_modules/**/*.json"])
         .pipe(jsonlint())
         .pipe(jsonlint.reporter());
     cb();
 });
 
-gulp.task('test', function(cb) {
+gulp.task('test', ['set-test-env'], function(cb) {
     var mochaErr;
 
     gulp.src('test/**/*.js')
@@ -38,4 +38,9 @@ gulp.task('test', function(cb) {
         });
 });
 
-gulp.task('default', ['json', 'static', 'test']);
+gulp.task('set-test-env', function(cb) {
+    process.env.NODE_ENV = 'test';
+    cb();
+});
+
+gulp.task('default', ['set-test-env', 'json', 'static', 'test']);
