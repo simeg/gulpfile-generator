@@ -8,12 +8,9 @@ var mocha = require('gulp-mocha');
 var istanbul = require('gulp-istanbul');
 var plumber = require('gulp-plumber');
 
-gulp.task('static', function() {
-    gulp.src('source/*.js')
-        .pipe(excludeGitignore())
-        .pipe(eslint())
-        .pipe(eslint.format())
-        .pipe(eslint.failAfterError());
+gulp.task('set-test-env', function(cb) {
+    process.env.NODE_ENV = 'test';
+    cb();
 });
 
 gulp.task('json', ['set-test-env'], function(cb) {
@@ -21,6 +18,14 @@ gulp.task('json', ['set-test-env'], function(cb) {
         .pipe(jsonlint())
         .pipe(jsonlint.reporter());
     cb();
+});
+
+gulp.task('lint', function() {
+    gulp.src('source/*.js')
+        .pipe(excludeGitignore())
+        .pipe(eslint())
+        .pipe(eslint.format())
+        .pipe(eslint.failAfterError());
 });
 
 gulp.task('test', ['set-test-env'], function(cb) {
@@ -38,9 +43,4 @@ gulp.task('test', ['set-test-env'], function(cb) {
         });
 });
 
-gulp.task('set-test-env', function(cb) {
-    process.env.NODE_ENV = 'test';
-    cb();
-});
-
-gulp.task('default', ['set-test-env', 'json', 'static', 'test']);
+gulp.task('default', ['set-test-env', 'json', 'lint', 'test']);

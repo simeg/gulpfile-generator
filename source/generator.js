@@ -8,7 +8,6 @@ var defaultModules = Object.freeze(require('./generator.config.json').defaultMod
 
 var generator = {
     generateFile: function(options) {
-        // console.log(JSON.stringify(options, null, '  '));
         var g = generator;
 
         var devServer = options.devServer,
@@ -130,7 +129,7 @@ var generator = {
                 i + i + i + i + "generator.emit('end');\n" + i + i + "}}))\n";
         }
 
-        var content = "gulp.task('styles', function() {\n" +
+        var content = "gulp.task('css', function() {\n" +
             (preProcessing ? preProcessing : '');
 
         // Add gulp pipeline tasks
@@ -152,7 +151,7 @@ var generator = {
 
         var indentationBase = '  ';
         var i = indentationBase;
-        var content = "gulp.task('scripts', function() {\n" +
+        var content = "gulp.task('javascript', function() {\n" +
             i + "return gulp.src(JS_SOURCE + '/**/*" + scriptExtension + "')\n" +
             i + i + ".pipe(plumber({\n" +
             i + i + i + "errorHandler: function(error) {\n" +
@@ -181,7 +180,7 @@ var generator = {
         var isCoffee = (allOptions.indexOf('coffee') !== -1);
         var scriptExtension = (isCoffee ? '.coffee' : '.js');
         var scriptWatchRow =
-            i + "gulp.watch(JS_SOURCE + '/**/*" + scriptExtension + "', ['scripts']);" + "\n";
+            i + "gulp.watch(JS_SOURCE + '/**/*" + scriptExtension + "', ['javascript']);" + "\n";
 
         var styleExtension = null;
         if (allOptions.indexOf('less') !== -1) {
@@ -194,7 +193,7 @@ var generator = {
 
         if (styleExtension)
             var styleWatchRow = i + "gulp.watch(CSS_SOURCE + '/**/*" + styleExtension +
-                "', ['styles']);" + "\n";
+                "', ['css']);" + "\n";
 
         return (
             "gulp.task('default', " + (isDevServer ? "['browser-sync'], " : '') + "function() {\n" +
