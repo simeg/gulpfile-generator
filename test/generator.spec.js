@@ -15,7 +15,7 @@ describe('generator', function() {
         fsMock.restore();
     });
 
-    var getDefaultConfig = function() {
+    var getEmptyConfig = function() {
         return Object.seal({
             'devServer': false,
             'jsOptions': [],
@@ -29,19 +29,33 @@ describe('generator', function() {
         });
     };
 
+    var getConfigWithOptions = function() {
+        return Object.seal({
+            'devServer': false,
+            'jsOptions': ['concat'],
+            'jsDistSource': 'src/scripts',
+            'jsDistDest': 'dist/scripts',
+            'cssPreProcessorType': 'none',
+            'cssOptions': ['autoprefixer'],
+            'cssDistSource': 'src/styles',
+            'cssDistDest': 'dist/styles',
+            'outputDependencies': false
+        });
+    };
+
     var getCurrentFileContent = function() {
         return fs.readFileSync('gulpfile.js', 'utf8');
     };
 
     describe('generates a gulpfile.js', function() {
 
-        var defaultConfig;
+        var config;
         beforeEach(function() {
             fsMock({
                 'gulpfile.js': ''
             });
 
-            defaultConfig = getDefaultConfig();
+            config = getConfigWithOptions();
         });
 
         var assertUniqueStringOccurrences = function(haystack, strStartingPoint, count, string) {
@@ -80,7 +94,7 @@ describe('generator', function() {
         };
 
         var generateFileWithOptions = function(jsOptions, cssOptions) {
-            var config = getDefaultConfig();
+            var config = getEmptyConfig();
             config.jsOptions = jsOptions || [];
             config.cssOptions = cssOptions || [];
             generator.generateFile(config);
@@ -134,26 +148,83 @@ describe('generator', function() {
             });
         };
 
-        describe('with default configuration', function() {
+        describe('using a config with one option of each', function() {
 
             beforeEach(function() {
-                generator.generateFile(defaultConfig);
+                generator.generateFile(config);
             });
 
-            it('generates default imports', function() {
+            describe('and development server enabled', function() {
+
+                beforeEach(function() {
+                    var config = getConfigWithOptions();
+                    config.devServer = true;
+                    generator.generateFile(config);
+                });
+
+                it('generates correct imports', function() {
+                    var correctImports = [
+                        "var gulp = require('gulp');",
+                        "var plumber = require('gulp-plumber');",
+                        "var rename = require('gulp-rename');",
+                        "var browserSync = require('browser-sync');"
+                    ];
+                    var currentFileContent = getCurrentFileContent();
+                    assertImports(currentFileContent, correctImports);
+                });
+
+                it('generates correct variables', function() {
+                    var correctVariables = [
+                        "var JS_SOURCE = 'src/scripts'",
+                        "var JS_DEST = 'dist/scripts'",
+                        "var JS_OUTPUT_FILE = 'main.js'",
+                        "var SERVER_BASE_DIR = './';",
+                        "var WATCH_FILE_EXTENSIONS = ['*.html'];"
+                    ];
+                    var currentFileContent = getCurrentFileContent();
+                    assertVariables(currentFileContent, correctVariables);
+                });
+
+                it('generates browser-sync task', function() {
+                    var taskCodeLines = [
+                        "gulp.task('browser-sync', function() {",
+                        "browserSync({",
+                        "server: {",
+                        "baseDir: SERVER_BASE_DIR",
+                        "}",
+                        "});",
+                        "});"
+                    ];
+
+                    var currentFileContent = getCurrentFileContent();
+                    assertStringOccurrences(currentFileContent, taskCodeLines);
+                });
+
+                it('generates correct default task', function() {
+                    var taskDeclaration = "gulp.task('default', ['browser-sync'], function() {";
+                    var nrOfWatchInTask = 2;
+                    var searchTerm = '.watch(';
+
+                    var currentFileContent = getCurrentFileContent();
+
+                    assertUniqueStringOccurrences(currentFileContent, taskDeclaration, nrOfWatchInTask, searchTerm);
+                });
+            });
+
+            it('generates imports', function() {
                 // TODO: Add getDefaultImports()
-                var defaultImports = [
+                var imports = [
                     "var gulp = require('gulp');",
                     "var plumber = require('gulp-plumber');",
                     "var rename = require('gulp-rename');"
                 ];
                 var currentFileContent = getCurrentFileContent();
-                assertImports(currentFileContent, defaultImports);
+                assertImports(currentFileContent, imports);
             });
 
-            it('generates default variables', function() {
+            it('generates variables', function() {
                 // TODO: Add getDefaultVariables()
-                var defaultVariables = [
+                var variables = [
                     "var JS_SOURCE = 'src/scripts'",
                     "var JS_DEST = 'dist/scripts'",
                     "var JS_OUTPUT_FILE = 'main.js'",
@@ -161,10 +232,10 @@ describe('generator', function() {
                     "var CSS_DEST = 'dist/styles';"
                 ];
                 var currentFileContent = getCurrentFileContent();
-                assertVariables(currentFileContent, defaultVariables);
+                assertVariables(currentFileContent, variables);
             });
 
-            it('generates default task', function() {
+            it('generates task', function() {
                 var taskDeclaration = "gulp.task('default', function() {";
                 var nrOfWatchInTask = 1;
                 var searchTerm = '.watch(';
@@ -174,7 +245,7 @@ describe('generator', function() {
                 assertUniqueStringOccurrences(currentFileContent, taskDeclaration, nrOfWatchInTask, searchTerm);
             });
 
-            it('generates scripts task', function() {
+            it('generates javascript task', function() {
                 var taskDeclaration = "gulp.task('javascript', function() {";
                 var nrOfPipelinesInTask = 2;
 
@@ -198,62 +269,13 @@ describe('generator', function() {
 
                 assert(true, 'Scripts task looks ok');
             });
-        });
 
-        describe('with development server enabled and rest of config default', function() {
-
-            beforeEach(function() {
-                var config = defaultConfig;
-                config.devServer = true;
-                generator.generateFile(config);
+            it('generates css task', function() {
+                // TODO
             });
 
-            it('generates correct imports', function() {
-                var correctImports = [
-                    "var gulp = require('gulp');",
-                    "var plumber = require('gulp-plumber');",
-                    "var rename = require('gulp-rename');",
-                    "var browserSync = require('browser-sync');"
-                ];
-                var currentFileContent = getCurrentFileContent();
-                assertImports(currentFileContent, correctImports);
-            });
-
-            it('generates correct variables', function() {
-                var correctVariables = [
-                    "var JS_SOURCE = 'src/scripts'",
-                    "var JS_DEST = 'dist/scripts'",
-                    "var JS_OUTPUT_FILE = 'main.js'",
-                    "var SERVER_BASE_DIR = './';",
-                    "var WATCH_FILE_EXTENSIONS = ['*.html'];"
-                ];
-                var currentFileContent = getCurrentFileContent();
-                assertVariables(currentFileContent, correctVariables);
-            });
-
-            it('generates browser-sync task', function() {
-                var taskCodeLines = [
-                    "gulp.task('browser-sync', function() {",
-                    "browserSync({",
-                    "server: {",
-                    "baseDir: SERVER_BASE_DIR",
-                    "}",
-                    "});",
-                    "});"
-                ];
-
-                var currentFileContent = getCurrentFileContent();
-                assertStringOccurrences(currentFileContent, taskCodeLines);
-            });
-
-            it('generates correct default task', function() {
-                var taskDeclaration = "gulp.task('default', ['browser-sync'], function() {";
-                var nrOfWatchInTask = 2;
-                var searchTerm = '.watch(';
-
-                var currentFileContent = getCurrentFileContent();
-
-                assertUniqueStringOccurrences(currentFileContent, taskDeclaration, nrOfWatchInTask, searchTerm);
+            it('generates image task', function() {
+                // TODO
             });
         });
 
@@ -289,9 +311,14 @@ describe('generator', function() {
                 ".pipe(browserSync.reload({stream:true}))"
             ];
 
-            // TODO: Write this test
-            it('returns empty JS object when nothing to generate', function() {
-                // TODO
+            it('returns empty JS object 0 options selected', function() {
+                var generateNoJsCodeForThisObject = {
+                    jsDistSource: 'distSource',
+                    jsDistDest: 'distDest',
+                    jsOptions: []
+                };
+                var jsObject = generator.getJsOptions(generateNoJsCodeForThisObject);
+                assert.deepEqual(jsObject, {});
             });
 
             describe('using only one option', function() {
@@ -349,7 +376,7 @@ describe('generator', function() {
                 ".pipe(browserSync.reload({stream:true}))"
             ];
 
-            it('returns empty CSS object when nothing to generate', function() {
+            it('returns empty CSS object when 0 options and no pre processor selected', function() {
                 var generateNoCssCodeForThisObject = {
                     cssDistSource: 'distSource',
                     cssDistDest: 'distDest',
@@ -391,7 +418,7 @@ describe('generator', function() {
 
             describe('with pre processor types', function() {
                 var generateFileWithCssPreProcessorType = function(type) {
-                    var config = getDefaultConfig();
+                    var config = getEmptyConfig();
                     config.cssPreProcessorType = type;
                     generator.generateFile(config);
                 };
@@ -460,8 +487,8 @@ describe('generator', function() {
             });
         });
 
-        it('with no dependencies selected', function() {
-            var emptyDependenciesConfig = getDefaultConfig();
+        it('with no options selected', function() {
+            var emptyDependenciesConfig = getEmptyConfig();
             emptyDependenciesConfig.outputDependencies = true;
             generator.generateFile(emptyDependenciesConfig);
 
@@ -471,8 +498,8 @@ describe('generator', function() {
             assert.equal(actual, expect);
         });
 
-        it('containing selected dependencies', function() {
-            var installDependenciesConfig = getDefaultConfig();
+        it('containing selected options', function() {
+            var installDependenciesConfig = getEmptyConfig();
             installDependenciesConfig.jsOptions = ['uglify', 'babel', 'jshint'];
             installDependenciesConfig.outputDependencies = true;
             installDependenciesConfig.devServer = true;
@@ -496,7 +523,7 @@ describe('generator', function() {
         });
 
         it('on incorrect JS option', function() {
-            var config = getDefaultConfig();
+            var config = getEmptyConfig();
             config.jsOptions = ['incorrectOption'];
             generator.generateFile(config);
 
@@ -505,7 +532,7 @@ describe('generator', function() {
         });
 
         it('on incorrect CSS option', function() {
-            var config = getDefaultConfig();
+            var config = getEmptyConfig();
             config.cssOptions = ['incorrectOption'];
             generator.generateFile(config);
 
@@ -531,7 +558,7 @@ describe('generator', function() {
         });
 
         it('JS pipeline tasks', function() {
-            var config = getDefaultConfig();
+            var config = getEmptyConfig();
             config.jsOptions = utils.shuffleArray(['jshint', 'concat', 'dest',
                 'babel', 'uglify', 'browserSync', 'coffee']);
             config.devServer = true;
@@ -570,7 +597,7 @@ describe('generator', function() {
         });
 
         it('CSS pipeline tasks', function() {
-            var config = getDefaultConfig();
+            var config = getEmptyConfig();
             config.cssOptions =
                 utils.shuffleArray(['less', 'stylus', 'autoprefixer',
                     'minifycss', 'sass', 'browserSync']);
@@ -608,4 +635,5 @@ describe('generator', function() {
             assert.ok(true, 'CSS options are sorted');
         });
     });
+
 });

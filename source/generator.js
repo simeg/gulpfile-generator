@@ -12,13 +12,19 @@ var generator = {
 
         var devServer = options.devServer,
             jsObject = g.getJsOptions(options),
-            cssObject = g.getCssOptions(options);
+            cssObject = g.getCssOptions(options),
+            sortedJsOptions = [],
+            sortedCssOptions = [],
+            content,
+            totalOptions;
 
-        var sortedJsOptions = g.sortOptions(jsObject);
-        var sortedCssOptions = g.sortOptions(cssObject);
+        if (jsObject.options && jsObject.options.length)
+            sortedJsOptions = g.sortOptions(jsObject);
 
-        var content;
-        var totalOptions = sortedJsOptions.concat(sortedCssOptions);
+        if (cssObject.options && cssObject.options.length)
+            sortedCssOptions = g.sortOptions(cssObject);
+
+        totalOptions = sortedJsOptions.concat(sortedCssOptions);
 
         content = g.getImports(totalOptions);
         content += g.getVariableDeclarations(devServer, jsObject, cssObject);
@@ -34,15 +40,20 @@ var generator = {
         if (sortedCssOptions && sortedCssOptions.length)
             content += g.getStylesTask(sortedCssOptions, cssObject);
 
-        totalOptions.push(cssObject.preProcessorType);
+        if (cssObject.preProcessorType !== 'none')
+            totalOptions.push(cssObject.preProcessorType);
+
         content += g.getDefaultTask(totalOptions);
 
         if (options.outputDependencies)
-            g.generateDependencyFile(sortedJsOptions);
+            g.generateDependencyFile(totalOptions);
 
         g.writeToFile('gulpfile.js', content);
     },
     getJsOptions: function(userSelectedOptions) {
+        if (userSelectedOptions.jsOptions.length === 0)
+            return {};
+
         var optionsObj = {};
         optionsObj.options = userSelectedOptions.jsOptions;
         optionsObj.source = userSelectedOptions.jsDistSource;
@@ -290,7 +301,10 @@ var generator = {
 
             return dependencies;
         }, []);
-        var npmInstallStr = 'npm install --save-dev ' + dependencies.join(' ');
+        var uniqueDependencies = dependencies.filter(function(option, index) {
+            return dependencies.indexOf(option) === index;
+        });
+        var npmInstallStr = 'npm install --save-dev ' + uniqueDependencies.join(' ');
         generator.writeToFile('install-dependencies.txt', npmInstallStr);
     }
 };
