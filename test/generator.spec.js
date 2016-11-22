@@ -65,7 +65,7 @@ describe('generator', function() {
             for (var i = 0; i < needleArray.length; i++) {
                 string = needleArray[i];
                 if (result = (haystack.indexOf(string) === -1))
-                    assert.fail(result, true, 'String occurrence not found');
+                    assert.fail(result, true, string + ' occurrence not found');
             }
 
             assert(true, 'All string occurrences found');
@@ -101,7 +101,7 @@ describe('generator', function() {
                 var currentFileContent = getCurrentFileContent();
 
                 if (result = (currentFileContent.indexOf(code) === -1))
-                    assert.fail(result, true, 'Code not found'); // TODO: Log more info than this
+                    assert.fail(result, true, code + ' not found');
 
                 assert(true, 'Code for: [' + option + '] found');
             });
@@ -125,10 +125,10 @@ describe('generator', function() {
                 var currentFileContent = getCurrentFileContent();
 
                 if (result = (currentFileContent.indexOf(firstCode) === -1))
-                    assert.fail(result, true, 'Code not found');
+                    assert.fail(result, true, firstCode + ' not found');
 
                 if (result = (currentFileContent.indexOf(secondCode) === -1))
-                    assert.fail(result, true, 'Code not found');
+                    assert.fail(result, true, secondCode + ' not found');
 
                 assert(true, 'Code for: [' + firstOption + ' and ' + secondOption + '] found');
             });
@@ -182,14 +182,14 @@ describe('generator', function() {
 
                 var result;
                 if (result = (currentFileContent.indexOf(taskDeclaration) === -1))
-                    assert.fail(result, true, 'Scripts task not found');
+                    assert.fail(result, true, taskDeclaration + ' task not found');
 
                 var index = 0,
                     startingIndex = currentFileContent.indexOf(taskDeclaration);
                 for (var i = 0; i < nrOfPipelinesInTask; i++) {
                     index = currentFileContent.indexOf('.pipe(', index ? index : startingIndex);
                     if (index === -1) {
-                        assert.fail(false, true, 'Pipeline missing'); // TODO: Log more info?
+                        assert.fail(false, true, 'Pipeline missing');
                     } else {
                         // Increment to not find same pipeline string again
                         index++;
@@ -404,7 +404,7 @@ describe('generator', function() {
                         currentFileContent = getCurrentFileContent();
 
                         if (result = (currentFileContent.indexOf(codeScope) === -1))
-                            assert.fail(result, true, 'Code not found');
+                            assert.fail(result, true, codeScope + ' not found');
 
                         assert(true, 'Code for: [' + type + '] found');
                     });
