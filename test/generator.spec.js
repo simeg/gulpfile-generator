@@ -149,7 +149,6 @@ describe('generator', function() {
         };
 
         describe('using a config with one option of each', function() {
-
             beforeEach(function() {
                 generator.generateFile(config);
             });
@@ -245,7 +244,7 @@ describe('generator', function() {
                 assertUniqueStringOccurrences(currentFileContent, taskDeclaration, nrOfWatchInTask, searchTerm);
             });
 
-            it('generates javascript task', function() {
+            it('generates JavaScript task', function() {
                 var taskDeclaration = "gulp.task('javascript', function() {";
                 var nrOfPipelinesInTask = 2;
 
@@ -267,11 +266,32 @@ describe('generator', function() {
                     }
                 }
 
-                assert(true, 'Scripts task looks ok');
+                assert(true, 'JavaScript task is ok');
             });
 
             it('generates css task', function() {
-                // TODO
+                var taskDeclaration = "gulp.task('css', function() {";
+                var nrOfPipelinesInTask = 2;
+
+                var currentFileContent = getCurrentFileContent();
+
+                var result;
+                if (result = (currentFileContent.indexOf(taskDeclaration) === -1))
+                    assert.fail(result, true, taskDeclaration + ' task not found');
+
+                var index = 0,
+                    startingIndex = currentFileContent.indexOf(taskDeclaration);
+                for (var i = 0; i < nrOfPipelinesInTask; i++) {
+                    index = currentFileContent.indexOf('.pipe(', index ? index : startingIndex);
+                    if (index === -1) {
+                        assert.fail(false, true, 'Pipeline missing');
+                    } else {
+                        // Increment to not find same pipeline string again
+                        index++;
+                    }
+                }
+
+                assert(true, 'CSS task is ok');
             });
 
             it('generates image task', function() {
