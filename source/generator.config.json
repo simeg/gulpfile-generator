@@ -41,7 +41,7 @@
       "dest",
       "browserSync"
     ],
-    "images": [
+    "image": [
       "minifyimage",
       "cache"
     ]

@@ -13,8 +13,10 @@ var generator = {
         var devServer = options.devServer,
             jsObject = g.getJsOptions(options),
             cssObject = g.getCssOptions(options),
+            imageObject = g.getImageOptions(options),
             sortedJsOptions = [],
             sortedCssOptions = [],
+            sortedImageOptions = [],
             content,
             totalOptions;
 
@@ -24,10 +26,13 @@ var generator = {
         if (cssObject.options && cssObject.options.length)
             sortedCssOptions = g.sortOptions(cssObject);
 
-        totalOptions = sortedJsOptions.concat(sortedCssOptions);
+        if (imageObject.options && imageObject.options.length)
+            sortedImageOptions = g.sortOptions(imageObject);
+
+        totalOptions = [].concat(sortedJsOptions, sortedCssOptions, sortedImageOptions);
 
         content = g.getImports(totalOptions);
-        content += g.getVariableDeclarations(devServer, jsObject, cssObject);
+        content += g.getVariableDeclarations(devServer, jsObject, cssObject, imageObject);
 
         if (devServer)
             content += "\n" + g.getCustomCode('browserSync');
@@ -35,10 +40,13 @@ var generator = {
         content += '\n';
 
         if (sortedJsOptions && sortedJsOptions.length)
-            content += g.getScriptsTask(sortedJsOptions, jsObject);
+            content += g.getJavascriptTask(sortedJsOptions);
 
         if (sortedCssOptions && sortedCssOptions.length)
-            content += g.getStylesTask(sortedCssOptions, cssObject);
+            content += g.getCssTask(sortedCssOptions, cssObject);
+
+        if (sortedImageOptions && sortedImageOptions.length)
+            content += g.getImageTask(sortedImageOptions);
 
         if (cssObject.preProcessorType !== 'none')
             totalOptions.push(cssObject.preProcessorType);
@@ -88,6 +96,22 @@ var generator = {
 
         return optionsObj;
     },
+    getImageOptions: function(userSelectedOptions) {
+        if (userSelectedOptions.imageOptions.length === 0)
+            return {};
+
+        var optionsObj = {};
+
+        optionsObj.options = userSelectedOptions.imageOptions;
+        optionsObj.source = userSelectedOptions.imageDistSource;
+        optionsObj.dest = userSelectedOptions.imageDistDest;
+        optionsObj.sortType = 'image';
+
+        if (optionsObj.options.indexOf('minifyimage') !== -1)
+            optionsObj.options.push('cache');
+
+        return optionsObj;
+    },
     getImports: function(options) {
         var content = '',
             modules = defaultModules.concat(options);
@@ -105,7 +129,7 @@ var generator = {
 
         return content;
     },
-    getVariableDeclarations: function(devServer, jsOptions, cssOptions) {
+    getVariableDeclarations: function(devServer, jsOptions, cssOptions, imageOptions) {
         var content;
         content = "\nvar JS_SOURCE = '" + jsOptions.source + "';";
         content += "\nvar JS_DEST = '" + jsOptions.dest + "';";
@@ -113,6 +137,10 @@ var generator = {
 
         content += "\nvar CSS_SOURCE = '" + cssOptions.source + "';";
         content += "\nvar CSS_DEST = '" + cssOptions.dest + "';";
+
+        content += "\nvar IMAGE_SOURCE = '" + imageOptions.source + "';";
+        content += "\nvar IMAGE_DEST = '" + imageOptions.dest + "';";
+
         if (devServer) {
             content += "\nvar SERVER_BASE_DIR = './';";
             content += "\nvar WATCH_FILE_EXTENSIONS = ['*.html'];";
@@ -121,7 +149,33 @@ var generator = {
 
         return content;
     },
-    getStylesTask: function(options, cssObject) {
+    getJavascriptTask: function(options) {
+        var isCoffee = (options.indexOf('coffee') !== -1);
+        var scriptExtension = (isCoffee ? '.coffee' : '.js');
+
+        var indentationBase = '  ';
+        var i = indentationBase;
+        var content = "gulp.task('javascript', function() {\n" +
+            i + "return gulp.src(JS_SOURCE + '/**/*" + scriptExtension + "')\n" +
+            i + i + ".pipe(plumber({\n" +
+            i + i + i + "errorHandler: function(error) {\n" +
+            i + i + i + i + "console.log(error.message);\n" +
+            i + i + i + i + "generator.emit('end');\n" + i + i + "}}))\n";
+
+        // Add gulp pipeline tasks
+        for (var j = 0; j < options.length; j++) {
+            var option = options[j];
+            var gulpCode = generator.getJsOptionCode(option);
+            if (gulpCode)
+                content += i + i + gulpCode + "\n";
+
+            if (j === (options.length - 1))
+                content += "});\n\n";
+        }
+
+        return content;
+    },
+    getCssTask: function(options, cssObject) {
         var preProcessing,
             type = cssObject.preProcessorType;
 
@@ -149,7 +203,7 @@ var generator = {
         // Add gulp pipeline tasks
         for (var j = 0; j < options.length; j++) {
             var option = options[j];
-            var gulpCode = generator.getCssOptionCode(option, cssObject.dest);
+            var gulpCode = generator.getCssOptionCode(option);
             if (gulpCode)
                 content += i + i + gulpCode + "\n";
 
@@ -159,23 +213,16 @@ var generator = {
 
         return content;
     },
-    getScriptsTask: function(options, jsObject) {
-        var isCoffee = (options.indexOf('coffee') !== -1);
-        var scriptExtension = (isCoffee ? '.coffee' : '.js');
-
+    getImageTask: function(options) {
         var indentationBase = '  ';
         var i = indentationBase;
-        var content = "gulp.task('javascript', function() {\n" +
-            i + "return gulp.src(JS_SOURCE + '/**/*" + scriptExtension + "')\n" +
-            i + i + ".pipe(plumber({\n" +
-            i + i + i + "errorHandler: function(error) {\n" +
-            i + i + i + i + "console.log(error.message);\n" +
-            i + i + i + i + "generator.emit('end');\n" + i + i + "}}))\n";
+        var content = "gulp.task('images', function() {\n" +
+            i + "gulp.src(IMAGE_SOURCE + '/**/*')\n";
 
         // Add gulp pipeline tasks
         for (var j = 0; j < options.length; j++) {
             var option = options[j];
-            var gulpCode = generator.getJsOptionCode(option, jsObject.dest);
+            var gulpCode = generator.getImageOptionCode(option);
             if (gulpCode)
                 content += i + i + gulpCode + "\n";
 
@@ -219,12 +266,36 @@ var generator = {
     getModulePath: function (name) {
         return moduleNames[name] || null;
     },
+    getJsOptionCode: function(name) {
+        switch (name) {
+        case 'babel':
+            return ".pipe(babel())";
+        case 'browserSync':
+            return ".pipe(browserSync.reload({ stream:true }))";
+        case 'coffee':
+            return ".pipe(coffee({bare: true}))";
+        case 'concat':
+            return ".pipe(concat(JS_OUTPUT_FILE))";
+        case 'dest':
+            return ".pipe(gulp.dest(JS_DEST + '/'))";
+        case 'jshint':
+            return ".pipe(jshint())\n" +
+                "    .pipe(jshint.reporter('default'))";
+        case 'uglify':
+            return ".pipe(gulp.dest(JS_DEST + '/'))\n" +
+                "    .pipe(rename({suffix: '.min'}))\n" +
+                "    .pipe(uglify())";
+        default:
+            console.warn('Option [' + name + '] is not a valid JS option'); // eslint-disable-line
+            return null;
+        }
+    },
     getCssOptionCode: function(name) {
         switch (name) {
         case 'autoprefixer':
             return ".pipe(autoprefixer('last 2 versions'))";
         case 'browserSync':
-            return ".pipe(browserSync.reload({stream:true}))";
+            return ".pipe(browserSync.reload({ stream:true }))";
         case 'dest':
             return ".pipe(gulp.dest(CSS_DEST + '/'))";
         case 'less':
@@ -242,27 +313,16 @@ var generator = {
             return null;
         }
     },
-    getJsOptionCode: function(name) {
+    getImageOptionCode: function(name) {
         switch (name) {
-        case 'babel':
-            return ".pipe(babel())";
-        case 'browserSync':
-            return ".pipe(browserSync.reload({stream:true}))";
-        case 'coffee':
-            return ".pipe(coffee({bare: true}))";
-        case 'concat':
-            return ".pipe(concat(JS_OUTPUT_FILE))";
-        case 'dest':
-            return ".pipe(gulp.dest(JS_DEST + '/'))";
-        case 'jshint':
-            return ".pipe(jshint())\n" +
-                "    .pipe(jshint.reporter('default'))";
-        case 'uglify':
-            return ".pipe(gulp.dest(JS_DEST + '/'))\n" +
-                "    .pipe(rename({suffix: '.min'}))\n" +
-                "    .pipe(uglify())";
+        case 'minifyimage':
+            return ".pipe(cache(imagemin(" +
+                "{ optimizationLevel: 3, progressive: true, interlaced: true })))\n" +
+                "    .pipe(gulp.dest(IMAGE_DEST + '/'));";
+        case 'cache':
+            return '';
         default:
-            console.warn('Option [' + name + '] is not a valid JS option'); // eslint-disable-line
+            console.warn('Option [' + name + '] is not a valid image option'); // eslint-disable-line
             return null;
         }
     },
