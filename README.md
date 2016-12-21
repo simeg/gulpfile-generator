@@ -21,12 +21,14 @@ This will start up an interactive interface where you get to select what tasks y
   * **JSHint** using [gulp-jshint](https://github.com/spalger/gulp-jshint)
   * **Compiling CoffeeScript** using [gulp-coffee](https://github.com/contra/gulp-coffee)
   * **Converting ES6 to ES5** using [gulp-babel](https://github.com/babel/gulp-babel)
-  * _More.. (coming soon!)_
+  * _More.. (coming soon)_
 * CSS
   * **LESS** using [gulp-less](https://github.com/plus3network/gulp-less)
   * **Sass** using [gulp-sass](https://github.com/dlmanning/gulp-sass)
   * **Stylus** using [gulp-stylus](https://github.com/stevelacy/gulp-stylus)
   * **Autoprefixer** using [gulp-autoprefixer](https://github.com/sindresorhus/gulp-autoprefixer)
   * **Minification** using _gulp-minify-css_ (will be replaced by [gulp-clean-css](https://github.com/scniro/gulp-clean-css))
-  * _More.. (coming soon!)_
-* Images (_coming soon!_)
+  * _More.. (coming soon)_
+* Images
+  * **Minification** using [gulp-imagemin](https://github.com/sindresorhus/gulp-imagemin)
+  * _More.. (coming soon)_
