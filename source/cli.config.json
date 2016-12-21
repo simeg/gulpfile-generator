@@ -110,6 +110,32 @@
       "filter": "formatDist"
     },
     {
+      "type": "checkbox",
+      "name": "imageOptions",
+      "message": "Select what options you want for your images",
+      "choices": [
+        {
+          "name": "Minify",
+          "short": "Minify",
+          "value": "minifyimage"
+        }
+      ]
+    },
+    {
+      "type": "input",
+      "name": "imageDistSource",
+      "message": "Image source destination",
+      "default": "src/images",
+      "filter": "formatDist"
+    },
+    {
+      "type": "input",
+      "name": "imageDistDest",
+      "message": "Image build destination",
+      "default": "dist/images",
+      "filter": "formatDist"
+    },
+    {
       "type": "confirm",
       "name": "outputDependencies",
       "message": "Do you want me to generate a file with an npm install string (install-dependencies.txt)?"
