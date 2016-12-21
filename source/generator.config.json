@@ -8,12 +8,14 @@
     "autoprefixer": "gulp-autoprefixer",
     "babel": "gulp-babel",
     "browserSync": "browser-sync",
+    "cache": "gulp-cache",
     "coffee": "gulp-coffee",
     "concat": "gulp-concat",
     "gulp": "gulp",
     "jshint": "gulp-jshint",
     "less": "gulp-less",
     "minifycss": "gulp-minify-css",
+    "minifyimage": "gulp-imagemin",
     "plumber": "gulp-plumber",
     "rename": "gulp-rename",
     "sass": "gulp-sass",
@@ -38,6 +40,10 @@
       "minifycss",
       "dest",
       "browserSync"
+    ],
+    "images": [
+      "minifyimage",
+      "cache"
     ]
   }
 }
