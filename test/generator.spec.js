@@ -19,12 +19,15 @@ describe('generator', function() {
         return Object.seal({
             'devServer': false,
             'jsOptions': [],
-            'jsDistSource': 'src/scripts',
-            'jsDistDest': 'dist/scripts',
+            'jsDistSource': 'src/javascript',
+            'jsDistDest': 'dist/javascript',
             'cssPreProcessorType': 'none',
             'cssOptions': [],
-            'cssDistSource': 'src/styles',
-            'cssDistDest': 'dist/styles',
+            'cssDistSource': 'src/css',
+            'cssDistDest': 'dist/css',
+            'imageOptions': [],
+            'imageDistSource': 'src/images',
+            'imageDistDest': 'dist/images',
             'outputDependencies': false
         });
     };
@@ -33,12 +36,15 @@ describe('generator', function() {
         return Object.seal({
             'devServer': false,
             'jsOptions': ['concat'],
-            'jsDistSource': 'src/scripts',
-            'jsDistDest': 'dist/scripts',
+            'jsDistSource': 'src/javascript',
+            'jsDistDest': 'dist/javascript',
             'cssPreProcessorType': 'none',
             'cssOptions': ['autoprefixer'],
-            'cssDistSource': 'src/styles',
-            'cssDistDest': 'dist/styles',
+            'cssDistSource': 'src/css',
+            'cssDistDest': 'dist/css',
+            'imageOptions': ['minifyimage'],
+            'imageDistSource': 'src/images',
+            'imageDistDest': 'dist/images',
             'outputDependencies': false
         });
     };
@@ -49,13 +55,13 @@ describe('generator', function() {
 
     describe('generates a gulpfile.js', function() {
 
-        var config;
+        var configWithOptions;
         beforeEach(function() {
             fsMock({
                 'gulpfile.js': ''
             });
 
-            config = getConfigWithOptions();
+            configWithOptions = getConfigWithOptions();
         });
 
         var assertUniqueStringOccurrences = function(haystack, strStartingPoint, count, string) {
@@ -150,7 +156,7 @@ describe('generator', function() {
 
         describe('using a config with one option of each', function() {
             beforeEach(function() {
-                generator.generateFile(config);
+                generator.generateFile(configWithOptions);
             });
 
             describe('and development server enabled', function() {
@@ -174,11 +180,13 @@ describe('generator', function() {
 
                 it('generates correct variables', function() {
                     var correctVariables = [
-                        "var JS_SOURCE = 'src/scripts'",
-                        "var JS_DEST = 'dist/scripts'",
+                        "var JS_SOURCE = 'src/javascript'",
+                        "var JS_DEST = 'dist/javascript'",
                         "var JS_OUTPUT_FILE = 'main.js'",
                         "var SERVER_BASE_DIR = './';",
-                        "var WATCH_FILE_EXTENSIONS = ['*.html'];"
+                        "var WATCH_FILE_EXTENSIONS = ['*.html'];",
+                        "var IMAGE_SOURCE = 'src/images';",
+                        "var IMAGE_DEST = 'dist/images';"
                     ];
                     var currentFileContent = getCurrentFileContent();
                     assertVariables(currentFileContent, correctVariables);
@@ -224,11 +232,13 @@ describe('generator', function() {
             it('generates variables', function() {
                 // TODO: Add getDefaultVariables()
                 var variables = [
-                    "var JS_SOURCE = 'src/scripts'",
-                    "var JS_DEST = 'dist/scripts'",
+                    "var JS_SOURCE = 'src/javascript'",
+                    "var JS_DEST = 'dist/javascript'",
                     "var JS_OUTPUT_FILE = 'main.js'",
-                    "var CSS_SOURCE = 'src/styles';",
-                    "var CSS_DEST = 'dist/styles';"
+                    "var CSS_SOURCE = 'src/css';",
+                    "var CSS_DEST = 'dist/css';",
+                    "var IMAGE_SOURCE = 'src/images';",
+                    "var IMAGE_DEST = 'dist/images';"
                 ];
                 var currentFileContent = getCurrentFileContent();
                 assertVariables(currentFileContent, variables);
@@ -295,7 +305,28 @@ describe('generator', function() {
             });
 
             it('generates image task', function() {
-                // TODO
+                var taskDeclaration = "gulp.task('images', function() {";
+                var nrOfPipelinesInTask = 2;
+
+                var currentFileContent = getCurrentFileContent();
+
+                var result;
+                if (result = (currentFileContent.indexOf(taskDeclaration) === -1))
+                    assert.fail(result, true, taskDeclaration + ' task not found');
+
+                var index = 0,
+                    startingIndex = currentFileContent.indexOf(taskDeclaration);
+                for (var i = 0; i < nrOfPipelinesInTask; i++) {
+                    index = currentFileContent.indexOf('.pipe(', index ? index : startingIndex);
+                    if (index === -1) {
+                        assert.fail(false, true, 'Pipeline missing');
+                    } else {
+                        // Increment to not find same pipeline string again
+                        index++;
+                    }
+                }
+
+                assert(true, 'Image task is ok');
             });
         });
 
@@ -328,7 +359,7 @@ describe('generator', function() {
                 ".pipe(gulp.dest(JS_DEST + '/'))\n" +
                 "    .pipe(rename({suffix: '.min'}))\n" +
                 "    .pipe(uglify())",
-                ".pipe(browserSync.reload({stream:true}))"
+                ".pipe(browserSync.reload({ stream:true }))"
             ];
 
             it('returns empty JS object 0 options selected', function() {
@@ -393,7 +424,7 @@ describe('generator', function() {
                 ".pipe(gulp.dest(CSS_DEST + '/'))\n" +
                 "    .pipe(rename({suffix: '.min'}))\n" +
                 "    .pipe(minifycss())",
-                ".pipe(browserSync.reload({stream:true}))"
+                ".pipe(browserSync.reload({ stream:true }))"
             ];
 
             it('returns empty CSS object when 0 options and no pre processor selected', function() {
@@ -498,6 +529,10 @@ describe('generator', function() {
 
             });
         });
+
+        describe('with image option(s) [TODO]', function() {
+            // TODO
+        });
     });
 
     describe('generates a install-dependencies.txt', function() {
@@ -558,6 +593,15 @@ describe('generator', function() {
 
             assert(console.warn.calledOnce);
             assert(console.warn.calledWith('Option [incorrectOption] is not a valid CSS option'));
+        });
+
+        it('on incorrect image option', function() {
+            var config = getEmptyConfig();
+            config.imageOptions = ['incorrectOption'];
+            generator.generateFile(config);
+
+            assert(console.warn.calledOnce);
+            assert(console.warn.calledWith('Option [incorrectOption] is not a valid image option'));
         });
 
         it('on incorrect custom code type', function() {
@@ -653,6 +697,10 @@ describe('generator', function() {
             }
 
             assert.ok(true, 'CSS options are sorted');
+        });
+
+        it('Image pipeline tasks [TODO]', function() {
+            // TODO: When there's more than one option
         });
     });
 
