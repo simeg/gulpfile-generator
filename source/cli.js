@@ -23,14 +23,23 @@ var formatString = function (val) {
     return val.toLowerCase().trim();
 };
 
-var questionsWithFilter = questions.map(function(questionsObj) {
-    if (questionsObj.filter === 'formatDist') {
-        questionsObj.filter = formatString;
+var questionsWithFilter = questions.map(function(question) {
+    if (question.filter === 'formatDist') {
+        question.filter = formatString;
     }
-    return questionsObj;
+    return question;
 });
 
-inquirer.prompt(questionsWithFilter).then(function(answers) {
+var questionsWithWhen = questionsWithFilter.map(function(question) {
+    if (question.when === 'imageOptions.minifyimage') {
+        question.when = function(answers) {
+            return answers.imageOptions.indexOf('minifyimage') !== -1;
+        };
+    }
+    return question;
+});
+
+inquirer.prompt(questionsWithWhen).then(function(answers) {
     if (!cliArguments.dryRun)
         generator(answers);
 });
