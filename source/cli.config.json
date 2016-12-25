@@ -126,14 +126,16 @@
       "name": "imageDistSource",
       "message": "Image source destination",
       "default": "src/images",
-      "filter": "formatDist"
+      "filter": "formatDist",
+      "when": "imageOptions.minifyimage"
     },
     {
       "type": "input",
       "name": "imageDistDest",
       "message": "Image build destination",
       "default": "dist/images",
-      "filter": "formatDist"
+      "filter": "formatDist",
+      "when": "imageOptions.minifyimage"
     },
     {
       "type": "confirm",
