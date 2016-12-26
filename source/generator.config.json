@@ -11,6 +11,7 @@
     "cache": "gulp-cache",
     "coffee": "gulp-coffee",
     "concat": "gulp-concat",
+    "cssLint": "gulp-csslint",
     "gulp": "gulp",
     "jshint": "gulp-jshint",
     "less": "gulp-less",
@@ -33,6 +34,7 @@
       "browserSync"
     ],
     "css": [
+      "cssLint",
       "less",
       "sass",
       "stylus",

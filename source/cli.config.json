@@ -84,6 +84,11 @@
       "message": "Select what options you want for your CSS?",
       "choices": [
         {
+          "name": "Lint (CSS only)",
+          "short": "Lint",
+          "value": "cssLint"
+        },
+        {
           "name": "Autoprefix",
           "short": "Autoprefix",
           "value": "autoprefixer"

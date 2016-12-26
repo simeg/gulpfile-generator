@@ -283,7 +283,7 @@ describe('generator', function() {
                 assert(true, 'JavaScript task is ok');
             });
 
-            it('generates css task', function() {
+            it('generates CSS task', function() {
                 var taskDeclaration = "gulp.task('css', function() {";
                 var nrOfPipelinesInTask = 2;
 
@@ -420,7 +420,8 @@ describe('generator', function() {
             var cssOptions = [
                 "autoprefixer",
                 "minifyCss",
-                "browserSync"
+                "browserSync",
+                "cssLint"
             ];
 
             var generatedCode = [
@@ -428,7 +429,8 @@ describe('generator', function() {
                 ".pipe(gulp.dest(CSS_DEST + '/'))\n" +
                 "    .pipe(rename({suffix: '.min'}))\n" +
                 "    .pipe(minifycss())",
-                ".pipe(browserSync.reload({ stream:true }))"
+                ".pipe(browserSync.reload({ stream:true }))",
+                ".pipe(csslint())"
             ];
 
             it('returns empty CSS object when 0 options and no pre processor selected', function() {
@@ -460,6 +462,10 @@ describe('generator', function() {
                         options: cssOptions,
                         generatedCode: generatedCode
                     };
+                // TODO: This currently tests options A and B like
+                // A + B
+                // B + A
+                // but it should only test a unique combination once
                 for (var i = 0; i < cssOptions.length; i++) {
                     for (var j = 0; j < cssOptions.length; j++) {
                         if (j === i)

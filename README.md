@@ -26,6 +26,7 @@ This will start up an interactive interface where you get to select what tasks y
   * **LESS** using [gulp-less](https://github.com/plus3network/gulp-less)
   * **Sass** using [gulp-sass](https://github.com/dlmanning/gulp-sass)
   * **Stylus** using [gulp-stylus](https://github.com/stevelacy/gulp-stylus)
+  * **Lint** using [gulp-csslint](https://github.com/lazd/gulp-csslint)
   * **Autoprefixer** using [gulp-autoprefixer](https://github.com/sindresorhus/gulp-autoprefixer)
   * **Minification** using _gulp-minify-css_ (will be replaced by [gulp-clean-css](https://github.com/scniro/gulp-clean-css))
   * _More.. (coming soon)_

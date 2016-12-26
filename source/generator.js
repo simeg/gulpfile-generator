@@ -296,6 +296,9 @@ var generator = {
             return ".pipe(autoprefixer('last 2 versions'))";
         case 'browserSync':
             return ".pipe(browserSync.reload({ stream:true }))";
+        case 'cssLint':
+            return ".pipe(csslint())\n" +
+                "    .pipe(csslint.reporter())";
         case 'dest':
             return ".pipe(gulp.dest(CSS_DEST + '/'))";
         case 'less':
