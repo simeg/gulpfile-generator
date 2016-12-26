@@ -97,17 +97,17 @@ var generator = {
         return optionsObj;
     },
     getImageOptions: function(userSelectedOptions) {
-        if (userSelectedOptions.imageOptions.length === 0)
+        if (userSelectedOptions.otherOptions.length === 0)
             return {};
 
         var optionsObj = {};
 
-        optionsObj.options = userSelectedOptions.imageOptions;
-        optionsObj.source = userSelectedOptions.imageDistSource;
-        optionsObj.dest = userSelectedOptions.imageDistDest;
+        optionsObj.options = userSelectedOptions.otherOptions;
+        optionsObj.imageSource = userSelectedOptions.imageDistSource;
+        optionsObj.imageDest = userSelectedOptions.imageDistDest;
         optionsObj.sortType = 'image';
 
-        if (optionsObj.options.indexOf('minifyimage') !== -1)
+        if (optionsObj.options.indexOf('minifyImage') !== -1)
             optionsObj.options.push('cache');
 
         return optionsObj;
@@ -129,7 +129,7 @@ var generator = {
 
         return content;
     },
-    getVariableDeclarations: function(devServer, jsOptions, cssOptions, imageOptions) {
+    getVariableDeclarations: function(devServer, jsOptions, cssOptions, otherOptions) {
         var content;
         content = "\nvar JS_SOURCE = '" + jsOptions.source + "';";
         content += "\nvar JS_DEST = '" + jsOptions.dest + "';";
@@ -138,8 +138,8 @@ var generator = {
         content += "\nvar CSS_SOURCE = '" + cssOptions.source + "';";
         content += "\nvar CSS_DEST = '" + cssOptions.dest + "';";
 
-        content += "\nvar IMAGE_SOURCE = '" + imageOptions.source + "';";
-        content += "\nvar IMAGE_DEST = '" + imageOptions.dest + "';";
+        content += "\nvar IMAGE_SOURCE = '" + otherOptions.imageSource + "';";
+        content += "\nvar IMAGE_DEST = '" + otherOptions.imageDest + "';";
 
         if (devServer) {
             content += "\nvar SERVER_BASE_DIR = './';";
@@ -300,7 +300,7 @@ var generator = {
             return ".pipe(gulp.dest(CSS_DEST + '/'))";
         case 'less':
             return ".pipe(less())";
-        case 'minifycss':
+        case 'minifyCss':
             return ".pipe(gulp.dest(CSS_DEST + '/'))\n" +
                 "    .pipe(rename({suffix: '.min'}))\n" +
                 "    .pipe(minifycss())";
@@ -315,7 +315,7 @@ var generator = {
     },
     getImageOptionCode: function(name) {
         switch (name) {
-        case 'minifyimage':
+        case 'minifyImage':
             return ".pipe(cache(imagemin(" +
                 "{ optimizationLevel: 3, progressive: true, interlaced: true })))\n" +
                 "    .pipe(gulp.dest(IMAGE_DEST + '/'));";

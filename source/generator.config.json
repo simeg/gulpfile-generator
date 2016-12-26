@@ -14,8 +14,8 @@
     "gulp": "gulp",
     "jshint": "gulp-jshint",
     "less": "gulp-less",
-    "minifycss": "gulp-minify-css",
-    "minifyimage": "gulp-imagemin",
+    "minifyCss": "gulp-minify-css",
+    "minifyImage": "gulp-imagemin",
     "plumber": "gulp-plumber",
     "rename": "gulp-rename",
     "sass": "gulp-sass",
@@ -37,12 +37,12 @@
       "sass",
       "stylus",
       "autoprefixer",
-      "minifycss",
+      "minifyCss",
       "dest",
       "browserSync"
     ],
     "image": [
-      "minifyimage",
+      "minifyImage",
       "cache"
     ]
   }

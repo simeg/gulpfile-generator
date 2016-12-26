@@ -91,7 +91,7 @@
         {
           "name": "Minify",
           "short": "Minify",
-          "value": "minifycss"
+          "value": "minifyCss"
         }
       ]
     },
@@ -111,13 +111,13 @@
     },
     {
       "type": "checkbox",
-      "name": "imageOptions",
-      "message": "Select what options you want for your images",
+      "name": "otherOptions",
+      "message": "Select what other options you want",
       "choices": [
         {
-          "name": "Minify",
-          "short": "Minify",
-          "value": "minifyimage"
+          "name": "Minify images",
+          "short": "Minify images",
+          "value": "minifyImage"
         }
       ]
     },
@@ -127,7 +127,7 @@
       "message": "Image source destination",
       "default": "src/images",
       "filter": "formatDist",
-      "when": "imageOptions.minifyimage"
+      "when": "otherOptions.minifyImage"
     },
     {
       "type": "input",
@@ -135,7 +135,7 @@
       "message": "Image build destination",
       "default": "dist/images",
       "filter": "formatDist",
-      "when": "imageOptions.minifyimage"
+      "when": "otherOptions.minifyImage"
     },
     {
       "type": "confirm",

@@ -31,9 +31,9 @@ var questionsWithFilter = questions.map(function(question) {
 });
 
 var questionsWithWhen = questionsWithFilter.map(function(question) {
-    if (question.when === 'imageOptions.minifyimage') {
+    if (question.when === 'otherOptions.minifyImage') {
         question.when = function(answers) {
-            return answers.imageOptions.indexOf('minifyimage') !== -1;
+            return answers.otherOptions.indexOf('minifyImage') !== -1;
         };
     }
     return question;

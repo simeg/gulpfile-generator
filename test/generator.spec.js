@@ -25,7 +25,7 @@ describe('generator', function() {
             'cssOptions': [],
             'cssDistSource': 'src/css',
             'cssDistDest': 'dist/css',
-            'imageOptions': [],
+            'otherOptions': [],
             'imageDistSource': 'src/images',
             'imageDistDest': 'dist/images',
             'outputDependencies': false
@@ -42,7 +42,7 @@ describe('generator', function() {
             'cssOptions': ['autoprefixer'],
             'cssDistSource': 'src/css',
             'cssDistDest': 'dist/css',
-            'imageOptions': ['minifyimage'],
+            'otherOptions': ['minifyImage'],
             'imageDistSource': 'src/images',
             'imageDistDest': 'dist/images',
             'outputDependencies': false
@@ -99,11 +99,11 @@ describe('generator', function() {
             assertStringOccurrences(gulpFile, variables);
         };
 
-        var generateFileWithOptions = function(jsOptions, cssOptions, imageOptions) {
+        var generateFileWithOptions = function(jsOptions, cssOptions, otherOptions) {
             var config = getEmptyConfig();
             config.jsOptions = jsOptions || [];
             config.cssOptions = cssOptions || [];
-            config.imageOptions = imageOptions || [];
+            config.otherOptions = otherOptions || [];
             generator.generateFile(config);
         };
 
@@ -419,7 +419,7 @@ describe('generator', function() {
             // generates code that's in generatedCode[0] and so on
             var cssOptions = [
                 "autoprefixer",
-                "minifycss",
+                "minifyCss",
                 "browserSync"
             ];
 
@@ -546,8 +546,8 @@ describe('generator', function() {
 
                 // These two arrays match against index, so imageOptions[0]
                 // generates code that's in generatedCode[0] and so on
-                var imageOptions = [
-                    "minifyimage",
+                var otherOptions = [
+                    "minifyImage",
                     "cache"
                 ];
 
@@ -558,11 +558,11 @@ describe('generator', function() {
                 describe('using combination of options', function() {
                     var imageObject = {
                         indexes: null,
-                        options: imageOptions,
+                        options: otherOptions,
                         generatedCode: generatedCode
                     };
-                    for (var i = 0; i < imageOptions.length; i++) {
-                        for (var j = 0; j < imageOptions.length; j++) {
+                    for (var i = 0; i < otherOptions.length; i++) {
+                        for (var j = 0; j < otherOptions.length; j++) {
                             if (j === i)
                                 continue;
 
@@ -637,7 +637,7 @@ describe('generator', function() {
 
         it('on incorrect image option', function() {
             var config = getEmptyConfig();
-            config.imageOptions = ['incorrectOption'];
+            config.otherOptions = ['incorrectOption'];
             generator.generateFile(config);
 
             assert(console.warn.calledOnce);
@@ -704,7 +704,7 @@ describe('generator', function() {
             var config = getEmptyConfig();
             config.cssOptions =
                 utils.shuffleArray(['less', 'stylus', 'autoprefixer',
-                    'minifycss', 'sass', 'browserSync']);
+                    'minifyCss', 'sass', 'browserSync']);
             generator.generateFile(config);
 
             var sortOrder =
