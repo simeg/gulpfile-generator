@@ -99,10 +99,11 @@ describe('generator', function() {
             assertStringOccurrences(gulpFile, variables);
         };
 
-        var generateFileWithOptions = function(jsOptions, cssOptions) {
+        var generateFileWithOptions = function(jsOptions, cssOptions, imageOptions) {
             var config = getEmptyConfig();
             config.jsOptions = jsOptions || [];
             config.cssOptions = cssOptions || [];
+            config.imageOptions = imageOptions || [];
             generator.generateFile(config);
         };
 
@@ -128,7 +129,8 @@ describe('generator', function() {
         };
 
         // TODO: See if this can be written using runTestUsingSingleIndex()
-        var runTestUsingTwoIndexes = function(type, jsObject, cssObject) {
+        var runTestUsingTwoIndexes = function(type, jsObject, cssObject, imageObject) {
+            // TODO: Why separate jsObject from cssObject?
             var object = ((jsObject && Object.keys(jsObject).length > 0) ? jsObject : cssObject),
                 firstOption = object.options[object.indexes[0]],
                 firstCode = object.generatedCode[object.indexes[0]],
@@ -141,6 +143,8 @@ describe('generator', function() {
                     generateFileWithOptions([firstOption, secondOption], null);
                 } else if (type === 'css') {
                     generateFileWithOptions(null, [firstOption, secondOption]);
+                } else if (type === 'image') {
+                    generateFileWithOptions(null, null, [firstOption, secondOption]);
                 }
                 var currentFileContent = getCurrentFileContent();
 
@@ -411,7 +415,7 @@ describe('generator', function() {
 
             var type = 'css';
 
-            // These two arrays match against index, so jsOptions[0]
+            // These two arrays match against index, so cssOptions[0]
             // generates code that's in generatedCode[0] and so on
             var cssOptions = [
                 "autoprefixer",
@@ -530,8 +534,44 @@ describe('generator', function() {
             });
         });
 
-        describe('with image option(s) [TODO]', function() {
-            // TODO
+        describe('with other option:', function() {
+            describe('image', function() {
+                beforeEach(function() {
+                    fsMock({
+                        'gulpfile.js': ''
+                    });
+                });
+
+                var type = 'image';
+
+                // These two arrays match against index, so imageOptions[0]
+                // generates code that's in generatedCode[0] and so on
+                var imageOptions = [
+                    "minifyimage",
+                    "cache"
+                ];
+
+                var generatedCode = [
+                    "{ optimizationLevel: 3, progressive: true, interlaced: true })))",
+                    ".pipe(cache(imagemin("
+                ];
+                describe('using combination of options', function() {
+                    var imageObject = {
+                        indexes: null,
+                        options: imageOptions,
+                        generatedCode: generatedCode
+                    };
+                    for (var i = 0; i < imageOptions.length; i++) {
+                        for (var j = 0; j < imageOptions.length; j++) {
+                            if (j === i)
+                                continue;
+
+                            imageObject.indexes = [i, j];
+                            runTestUsingTwoIndexes(type, null, imageObject);
+                        }
+                    }
+                });
+            });
         });
     });
 
