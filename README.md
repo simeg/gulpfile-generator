@@ -1,8 +1,11 @@
 # gulpfile-generator [![Build Status](https://travis-ci.org/simeg/gulpfile-generator.svg?branch=master)](https://travis-ci.org/simeg/gulpfile-generator) [![codecov](https://codecov.io/gh/simeg/gulpfile-generator/branch/master/graph/badge.svg)](https://codecov.io/gh/simeg/gulpfile-generator)
 
-`gulpfile-generator` is an interactive tool to help your create your custom `gulpfile.js`. `gulpfile-generator` is run as an CLI where you get to input what tasks you want in your `gulpfile.js`. When it is done it will generate a `gulpfile.js` in the same folder as you are standing in. It can also generate a file containing the exact `npm` command to install the dependencies you need for your `gulpfile.js`.
+Are you tired of always having to manually set up a `gulpfile.js` for every new project? Me too, that's why I've written this small tool that will generate the `gulpfile.js` for you, based on your needs.  
+
+`gulpfile-generator` is an interactive tool to help your create your custom `gulpfile.js`. `gulpfile-generator` is run as an CLI where you will be asked for what tasks you want in your `gulpfile.js`. When it is done it will generate a `gulpfile.js` in the same folder as you are standing in. You can then optionally let it generate a file containing the exact `npm` command to install the dependencies you need for your `gulpfile.js`.
 
 ## Installation
+Since you probably want to use this tool for multiple projects, it makes sense to let it live in your global `node_modules` folder (hence the `g` flag).
 ```bash
 npm install -g gulpfile-generator
 ``` 
@@ -11,7 +14,7 @@ npm install -g gulpfile-generator
 ```bash
 gulpfile-generator
 ```
-This will start up an interactive interface where you get to select what tasks you want to be in your configuration file.
+This will start up an interactive interface where you should follow the instructions.
 
 ## Supports
 * **Development server** using [browser-sync](https://github.com/BrowserSync/browser-sync)
