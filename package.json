@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "cli-list": "^0.2.0",
-    "inquirer": "^1.2.2"
+    "inquirer": "2.0.0"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
