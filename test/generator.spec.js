@@ -49,6 +49,38 @@ describe('generator', function() {
         });
     };
 
+    var getConfigWithAllOptions = function() {
+        return Object.seal({
+            'devServer': true,
+            'jsOptions': [
+                "coffee",
+                "jshint",
+                "concat",
+                "babel",
+                "uglify",
+                "browserSync"
+            ],
+            'jsDistSource': 'src/javascript',
+            'jsDistDest': 'dist/javascript',
+            'cssPreProcessorType': 'sass',
+            'cssOptions': [
+                "autoprefixer",
+                "minifyCss",
+                "browserSync",
+                "cssLint"
+            ],
+            'cssDistSource': 'src/css',
+            'cssDistDest': 'dist/css',
+            'otherOptions': [
+                "minifyImage",
+                "cache"
+            ],
+            'imageDistSource': 'src/images',
+            'imageDistDest': 'dist/images',
+            'outputDependencies': false
+        });
+    };
+
     var getCurrentFileContent = function() {
         return fs.readFileSync('gulpfile.js', 'utf8');
     };
@@ -93,6 +125,21 @@ describe('generator', function() {
 
         var assertImports = function(gulpFile, imports) {
             assertStringOccurrences(gulpFile, imports);
+        };
+
+        var assertUniqueImports = function(gulpFile) {
+            var regex = /\w{3} \w+\s?=\s?require\(\'?.+\'\);/g;
+            var AllImports = gulpFile.match(regex);
+            var UniqueImports = AllImports.filter(function(item, index) {
+                return AllImports.indexOf(item) === index;
+            });
+            var isUniqe = AllImports.length === UniqueImports.length;
+            if(isUniqe) {
+                assert(true, 'All imports are unique');
+            }
+            else {
+                assert.fail(isUniqe, true, 'Imports are not unique');
+            }
         };
 
         var assertVariables = function(gulpFile, variables) {
@@ -331,6 +378,17 @@ describe('generator', function() {
                 }
 
                 assert(true, 'Image task is ok');
+            });
+        });
+        
+        describe('with all options', function() {
+            beforeEach(function() {
+                var config = getConfigWithAllOptions();
+                generator.generateFile(config);
+            });
+            it('generate unique imports', function() {
+                var currentFileContent = getCurrentFileContent();
+                assertUniqueImports(currentFileContent);
             });
         });
 
@@ -749,5 +807,4 @@ describe('generator', function() {
             // TODO: When there's more than one option
         });
     });
-
 });

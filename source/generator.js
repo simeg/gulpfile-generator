@@ -30,11 +30,9 @@ var generator = {
             sortedImageOptions = g.sortOptions(imageObject);
 
         totalOptions = [].concat(sortedJsOptions, sortedCssOptions, sortedImageOptions);
-        
         // we need to filter for duplicate options
-
         totalOptions = totalOptions.filter(function(option, index){
-          return totalOptions.indexOf(option) == index;
+            return totalOptions.indexOf(option) === index;
         });
 
         content = g.getImports(totalOptions);
