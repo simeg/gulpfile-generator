@@ -28,7 +28,7 @@ describe('generator', function() {
             'otherOptions': [],
             'imageDistSource': 'src/images',
             'imageDistDest': 'dist/images',
-            'outputDependencies': false
+            'outputDependencies': 'toTxtFile'
         });
     };
 
@@ -45,7 +45,7 @@ describe('generator', function() {
             'otherOptions': ['minifyImage'],
             'imageDistSource': 'src/images',
             'imageDistDest': 'dist/images',
-            'outputDependencies': false
+            'outputDependencies': 'toTxtFile'
         });
     };
 
@@ -77,7 +77,7 @@ describe('generator', function() {
             ],
             'imageDistSource': 'src/images',
             'imageDistDest': 'dist/images',
-            'outputDependencies': false
+            'outputDependencies': 'toTxtFile'
         });
     };
 
@@ -648,7 +648,7 @@ describe('generator', function() {
 
         it('with no options selected', function() {
             var emptyDependenciesConfig = getEmptyConfig();
-            emptyDependenciesConfig.outputDependencies = true;
+            emptyDependenciesConfig.outputDependencies = 'toTxtFile';
             generator.generateFile(emptyDependenciesConfig);
 
             var actual = fs.readFileSync('install-dependencies.txt', 'utf8');
@@ -660,7 +660,7 @@ describe('generator', function() {
         it('containing selected options', function() {
             var installDependenciesConfig = getEmptyConfig();
             installDependenciesConfig.jsOptions = ['uglify', 'babel', 'jshint'];
-            installDependenciesConfig.outputDependencies = true;
+            installDependenciesConfig.outputDependencies = 'toTxtFile';
             installDependenciesConfig.devServer = true;
             generator.generateFile(installDependenciesConfig);
 
