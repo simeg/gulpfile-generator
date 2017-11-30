@@ -34,7 +34,7 @@
         "strict": [0, "global"],
         "use-isnan": 2
     },
-    "env" : {
-        "node" : true
+    "env": {
+        "node": true
     }
 }

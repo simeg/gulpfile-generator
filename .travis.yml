@@ -3,6 +3,11 @@ os:
     - linux
     - windows
 node_js:
+    - "4"
+    - "5"
+    # Using `v6.10.2` we will hit this error
+    # https://github.com/substack/node-mkdirp/pull/110
+    # So pin 6.10.0 for now
     - "6.10.0"
 sudo: false
 before_script:
