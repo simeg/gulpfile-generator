@@ -143,9 +143,21 @@
       "when": "otherOptions.minifyImage"
     },
     {
-      "type": "confirm",
+      "type": "list",
       "name": "outputDependencies",
-      "message": "Do you want me to generate a file with an npm install string (install-dependencies.txt)?"
+      "message": "Select where your dependencies install script should be",
+      "choices": [
+        {
+          "name": "Write dependencies install script to package.json",
+          "short": "to package.json",
+          "value": "toPackageFile"
+        },
+        {
+          "name": "Write dependencies install script to install-dependencies.txt",
+          "short": "to install-dependencies.txt",
+          "value": "toTxtFile"
+        }
+      ]
     }
   ]
 }

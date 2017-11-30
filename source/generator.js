@@ -57,10 +57,29 @@ var generator = {
 
         content += g.getDefaultTask(totalOptions);
 
-        if (options.outputDependencies)
+        var installInstruction;
+        if (options.outputDependencies === "toTxtFile") {
+            installInstruction = "copy script in install-dependencies.txt and run it";
             g.generateDependencyFile(totalOptions);
-
+        }
+        else {
+            installInstruction = "npm run setup";
+            var writeSucces = g.generateInstallScriptToPackageJson(totalOptions);
+            if (!writeSucces) {
+                return;
+            }
+        }
         g.writeToFile('gulpfile.js', content);
+        // print instructions after the initialization
+        // but make sure we won't print it during test
+        if (process.env.NODE_ENV !== 'test') {
+            console.log(
+                "Your project folder is now ready !\n" +
+                "Instructions:\n" +
+                "1/ " + installInstruction + "\n" +
+                "2/ gulp"
+            );
+        }
     },
     getJsOptions: function(userSelectedOptions) {
         if (userSelectedOptions.jsOptions.length === 0)
@@ -373,6 +392,46 @@ var generator = {
         });
         var npmInstallStr = 'npm install --save-dev ' + uniqueDependencies.join(' ');
         generator.writeToFile('install-dependencies.txt', npmInstallStr);
+    },
+    generateInstallScriptToPackageJson: function(options) {
+        var allOptions = defaultModules.concat(options);
+        // Filter out non-valid dependencies
+        var dependencies = allOptions.reduce(function(dependencies, option) {
+            var dependency = generator.getModulePath(option);
+            if (dependency)
+                dependencies.push(dependency);
+
+            return dependencies;
+        }, []);
+        var uniqueDependencies = dependencies.filter(function(option, index) {
+            return dependencies.indexOf(option) === index;
+        });
+        var npmInstallStr = 'npm install --save-dev ' + uniqueDependencies.join(' ');
+        var writeSuccess = false;
+        fs.readFile('package.json', 'utf8', function (err, data){
+            if (err) {
+                console.warn(
+                    "\n\n" +
+                    "package.json file doesn't exists ! " +
+                    "Please run npm init first"+
+                    "\n\n"
+                );
+            }
+            else {
+
+                var packageFileContent = JSON.parse(data);
+                // 4 white-space for package.json
+                var indentation = 4;
+                packageFileContent.scripts.setup = npmInstallStr;
+                var json = JSON.stringify(packageFileContent, null, indentation);
+                fs.writeFile('package.json', json, 'utf8', function(err){
+                    if (!err) {
+                        writeSuccess = true;
+                    }
+                });
+            }
+        });
+        return writeSuccess;
     }
 };
 
