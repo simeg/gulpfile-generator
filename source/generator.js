@@ -419,12 +419,27 @@ var generator = {
             return dependencies.indexOf(option) === index;
         });
         var npmInstallStr = 'npm install --save-dev ' + uniqueDependencies.join(' ');
-        var packageFileContent;
         try {
-            packageFileContent = fs.readFileSync('package.json');
-            packageFileContent = JSON.parse(packageFileContent);
+            var packageFileContent = fs.readFileSync('package.json');
+            try {
+                packageFileContent = JSON.parse(packageFileContent);
+            }
+            catch (exception) {
+                console.warn(
+                    "\n\n" +
+                    "Error while parsing package.json file" +
+                    "Please check your package.json file for any redundant commas" +
+                    "\n\n"
+                );
+                return false;
+            }
             // 4 white-space for package.json
             var indentation = 4;
+            // create scripts if not exists
+            if (packageFileContent.scripts === undefined) {
+                packageFileContent.scripts = {};
+            }
+            // append the install script to scripts in package.json
             packageFileContent.scripts.setup = npmInstallStr;
             var json = JSON.stringify(packageFileContent, null, indentation);
             try {
@@ -447,6 +462,7 @@ var generator = {
                 "Please run npm init first"+
                 "\n\n"
             );
+            return false;
         }
     }
 };
