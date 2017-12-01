@@ -57,19 +57,25 @@ var generator = {
 
         content += g.getDefaultTask(totalOptions);
 
+        g.writeToFile('gulpfile.js', content);
+
         var installInstruction;
+        var outputDependenciesFunction;
         if (options.outputDependencies === "toTxtFile") {
             installInstruction = "copy script in install-dependencies.txt and run it";
-            g.generateDependencyFile(totalOptions);
+            outputDependenciesFunction = g.generateDependencyFile(totalOptions);
         }
         else {
             installInstruction = "npm run setup";
-            var writeSucces = g.generateInstallScriptToPackageJson(totalOptions);
-            if (!writeSucces) {
-                return;
-            }
+            outputDependenciesFunction = g.generateInstallScriptToPackageJson(totalOptions);
         }
-        g.writeToFile('gulpfile.js', content);
+        outputDependenciesFunction.then(function() {
+            g.showInstruction(installInstruction);
+        }).catch(function(err) {
+            console.warn(err);
+        });
+    },
+    showInstruction: function(installInstruction) {
         // print instructions after the initialization
         // but make sure we won't print it during test
         if (process.env.NODE_ENV !== 'test') {
@@ -391,7 +397,15 @@ var generator = {
             return dependencies.indexOf(option) === index;
         });
         var npmInstallStr = 'npm install --save-dev ' + uniqueDependencies.join(' ');
-        generator.writeToFile('install-dependencies.txt', npmInstallStr);
+        return new Promise(function(resolve, reject) {
+            try {
+                generator.writeToFile('install-dependencies.txt', npmInstallStr);
+                resolve();
+            }
+            catch (exception) {
+                reject(exception);
+            }
+        });
     },
     generateInstallScriptToPackageJson: function(options) {
         var allOptions = defaultModules.concat(options);
@@ -407,31 +421,34 @@ var generator = {
             return dependencies.indexOf(option) === index;
         });
         var npmInstallStr = 'npm install --save-dev ' + uniqueDependencies.join(' ');
-        var writeSuccess = false;
-        fs.readFile('package.json', 'utf8', function (err, data){
-            if (err) {
-                console.warn(
-                    "\n\n" +
-                    "package.json file doesn't exists ! " +
-                    "Please run npm init first"+
-                    "\n\n"
-                );
-            }
-            else {
 
-                var packageFileContent = JSON.parse(data);
-                // 4 white-space for package.json
-                var indentation = 4;
-                packageFileContent.scripts.setup = npmInstallStr;
-                var json = JSON.stringify(packageFileContent, null, indentation);
-                fs.writeFile('package.json', json, 'utf8', function(err){
-                    if (!err) {
-                        writeSuccess = true;
+        return new Promise(function(resolve, reject) {
+            fs.readFile('package.json', 'utf8', function (err, data){
+                if (err) {
+                    reject(
+                        "\n\n" +
+                        "package.json file doesn't exists ! " +
+                        "Please run npm init first"+
+                        "\n\n"
+                    );
+                }
+                else {
+
+                    var packageFileContent = JSON.parse(data);
+                    // 4 white-space for package.json
+                    var indentation = 4;
+                    packageFileContent.scripts.setup = npmInstallStr;
+                    var json = JSON.stringify(packageFileContent, null, indentation);
+                    try {
+                        generator.writeToFile('package.json', json);
+                        resolve();
                     }
-                });
-            }
+                    catch (exception) {
+                        reject(exception);
+                    }
+                }
+            });
         });
-        return writeSuccess;
     }
 };
 
