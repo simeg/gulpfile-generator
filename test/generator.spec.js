@@ -672,12 +672,47 @@ describe('generator', function() {
         });
     });
 
+    describe('generates install script in package.json', function() {
+        beforeEach(function() {
+            fsMock({
+                'package.json': '{ "name": "test" }'
+            });
+        });
+
+        it('with no options selected', function() {
+            var emptyDependenciesConfig = getEmptyConfig();
+            emptyDependenciesConfig.outputDependencies = 'toPackageFile';
+            generator.generateFile(emptyDependenciesConfig);
+
+            var packageFileContent = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            var actual = packageFileContent.scripts.setup;
+            var expect = 'npm install --save-dev gulp gulp-plumber gulp-rename';
+            assert.equal(actual, expect);
+        });
+
+        it('containing selected options', function() {
+            var installDependenciesConfig = getEmptyConfig();
+            installDependenciesConfig.jsOptions = ['uglify', 'babel', 'jshint'];
+            installDependenciesConfig.outputDependencies = 'toPackageFile';
+            installDependenciesConfig.devServer = true;
+            generator.generateFile(installDependenciesConfig);
+
+            var packageFileContent = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            var actual = packageFileContent.scripts.setup;
+
+            var expect = 'npm install --save-dev gulp gulp-plumber gulp-rename gulp-jshint ' +
+                'gulp-babel gulp-uglify browser-sync';
+            assert.equal(actual, expect);
+        });
+    });
+
     describe('logs', function() {
         beforeEach(function() {
             this.sinon.stub(console, 'warn');
 
             fsMock({
-                'gulpfile.js': ''
+                'gulpfile.js': '',
+                'package.json': ''
             });
         });
 
@@ -715,6 +750,20 @@ describe('generator', function() {
             assert(console.warn.calledOnce);
             assert(console.warn.calledWith(
                 'Type [' + type + '] is not a valid custom code option'));
+        });
+
+        it('on incorrect JSON format package.json' , function() {
+            var config = getEmptyConfig();
+            config.outputDependencies = "toPackageFile";
+            generator.generateFile(config);
+
+            assert(console.warn.calledOnce);
+            assert(console.warn.calledWith(
+              "\n\n" +
+              "Error while parsing package.json file" +
+              "Please check your package.json file for any redundant commas" +
+              "\n\n"
+            ));
         });
     });
 
