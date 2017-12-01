@@ -57,8 +57,6 @@ var generator = {
 
         content += g.getDefaultTask(totalOptions);
 
-        g.writeToFile('gulpfile.js', content);
-
         var installInstruction;
         var outputDependenciesFunction;
         if (options.outputDependencies === "toTxtFile") {
@@ -70,6 +68,7 @@ var generator = {
             outputDependenciesFunction = g.generateInstallScriptToPackageJson(totalOptions);
         }
         outputDependenciesFunction.then(function() {
+            g.writeToFile('gulpfile.js', content);
             g.showInstruction(installInstruction);
         }).catch(function(err) {
             console.warn(err);
@@ -167,8 +166,10 @@ var generator = {
         content += "\nvar CSS_SOURCE = '" + cssOptions.source + "';";
         content += "\nvar CSS_DEST = '" + cssOptions.dest + "';";
 
-        content += "\nvar IMAGE_SOURCE = '" + otherOptions.imageSource + "';";
-        content += "\nvar IMAGE_DEST = '" + otherOptions.imageDest + "';";
+        if (otherOptions.imageSource && otherOptions.imageDest) {
+            content += "\nvar IMAGE_SOURCE = '" + otherOptions.imageSource + "';";
+            content += "\nvar IMAGE_DEST = '" + otherOptions.imageDest + "';";
+        }
 
         if (devServer) {
             content += "\nvar SERVER_BASE_DIR = './';";
