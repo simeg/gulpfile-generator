@@ -58,21 +58,19 @@ var generator = {
         content += g.getDefaultTask(totalOptions);
 
         var installInstruction;
-        var outputDependenciesFunction;
+        var outputDependenciesIsSuccess;
         if (options.outputDependencies === "toTxtFile") {
             installInstruction = "copy script in install-dependencies.txt and run it";
-            outputDependenciesFunction = g.generateDependencyFile(totalOptions);
+            outputDependenciesIsSuccess = g.generateDependencyFile(totalOptions);
         }
         else {
             installInstruction = "npm run setup";
-            outputDependenciesFunction = g.generateInstallScriptToPackageJson(totalOptions);
+            outputDependenciesIsSuccess = g.generateInstallScriptToPackageJson(totalOptions);
         }
-        outputDependenciesFunction.then(function() {
+        if (outputDependenciesIsSuccess) {
             g.writeToFile('gulpfile.js', content);
             g.showInstruction(installInstruction);
-        }).catch(function(err) {
-            console.warn(err);
-        });
+        }
     },
     showInstruction: function(installInstruction) {
         // print instructions after the initialization
@@ -398,15 +396,14 @@ var generator = {
             return dependencies.indexOf(option) === index;
         });
         var npmInstallStr = 'npm install --save-dev ' + uniqueDependencies.join(' ');
-        return new Promise(function(resolve, reject) {
-            try {
-                generator.writeToFile('install-dependencies.txt', npmInstallStr);
-                resolve();
-            }
-            catch (exception) {
-                reject(exception);
-            }
-        });
+        try {
+            generator.writeToFile('install-dependencies.txt', npmInstallStr);
+            return true;
+        }
+        catch (exception) {
+            console.warn(exception);
+            return false;
+        }
     },
     generateInstallScriptToPackageJson: function(options) {
         var allOptions = defaultModules.concat(options);
@@ -422,34 +419,35 @@ var generator = {
             return dependencies.indexOf(option) === index;
         });
         var npmInstallStr = 'npm install --save-dev ' + uniqueDependencies.join(' ');
-
-        return new Promise(function(resolve, reject) {
-            fs.readFile('package.json', 'utf8', function (err, data){
-                if (err) {
-                    reject(
-                        "\n\n" +
-                        "package.json file doesn't exists ! " +
-                        "Please run npm init first"+
-                        "\n\n"
-                    );
-                }
-                else {
-
-                    var packageFileContent = JSON.parse(data);
-                    // 4 white-space for package.json
-                    var indentation = 4;
-                    packageFileContent.scripts.setup = npmInstallStr;
-                    var json = JSON.stringify(packageFileContent, null, indentation);
-                    try {
-                        generator.writeToFile('package.json', json);
-                        resolve();
-                    }
-                    catch (exception) {
-                        reject(exception);
-                    }
-                }
-            });
-        });
+        var packageFileContent;
+        try {
+            packageFileContent = fs.readFileSync('package.json');
+            packageFileContent = JSON.parse(packageFileContent);
+            // 4 white-space for package.json
+            var indentation = 4;
+            packageFileContent.scripts.setup = npmInstallStr;
+            var json = JSON.stringify(packageFileContent, null, indentation);
+            try {
+                generator.writeToFile('package.json', json);
+                return true;
+            }
+            catch (exception) {
+                console.warn(
+                    "\n\n" +
+                    "Error while writing to package.json" +
+                    "\n\n"
+                );
+                return false;
+            }
+        }
+        catch (exception) {
+            console.warn(
+                "\n\n" +
+                "package.json file doesn't exists ! " +
+                "Please run npm init first"+
+                "\n\n"
+            );
+        }
     }
 };
 
