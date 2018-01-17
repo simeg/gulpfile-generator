@@ -31,7 +31,10 @@
         "radix": 2,
         "semi": [2, "always"],
         "semi-spacing": [2, { "before": false, "after": true }],
-        "strict": [2, "global"],
+        "strict": [0, "global"],
         "use-isnan": 2
+    },
+    "env" : {
+        "node" : true
     }
 }

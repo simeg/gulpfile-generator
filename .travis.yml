@@ -3,9 +3,7 @@ os:
     - linux
     - windows
 node_js:
-    - "stable"
     - "6.10.0"
-    - "6"
 sudo: false
 before_script:
   - npm install -g yarn gulp codecov istanbul
