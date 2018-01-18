@@ -396,14 +396,15 @@ var generator = {
             return dependencies.indexOf(option) === index;
         });
         var npmInstallStr = 'npm install --save-dev ' + uniqueDependencies.join(' ');
+        var generateSuccess = true;
         try {
             generator.writeToFile('install-dependencies.txt', npmInstallStr);
-            return true;
         }
         catch (exception) {
             console.warn(exception); // eslint-disable-line
-            return false;
+            generateSuccess = false;
         }
+        return generateSuccess;
     },
     generateInstallScriptToPackageJson: function(options) {
         var allOptions = defaultModules.concat(options);
@@ -419,7 +420,8 @@ var generator = {
             return dependencies.indexOf(option) === index;
         });
         var npmInstallStr = 'npm install --save-dev ' + uniqueDependencies.join(' ');
-        try {
+        var generateSuccess = true;
+        if (fs.existsSync('package.json')) {
             var packageFileContent = fs.readFileSync('package.json');
             try {
                 packageFileContent = JSON.parse(packageFileContent);
@@ -431,7 +433,7 @@ var generator = {
                     "Please check your package.json file for any redundant commas" +
                     "\n\n"
                 );
-                return false;
+                generateSuccess = false;
             }
             // 4 white-space for package.json
             var indentation = 4;
@@ -442,28 +444,19 @@ var generator = {
             // append the install script to scripts in package.json
             packageFileContent.scripts.setup = npmInstallStr;
             var json = JSON.stringify(packageFileContent, null, indentation);
-            try {
-                generator.writeToFile('package.json', json);
-                return true;
-            }
-            catch (exception) {
-                console.warn( // eslint-disable-line
-                    "\n\n" +
-                    "Error while writing to package.json" +
-                    "\n\n"
-                );
-                return false;
-            }
+            generator.writeToFile('package.json', json);
         }
-        catch (exception) {
+        else {
             console.warn( // eslint-disable-line
                 "\n\n" +
                 "package.json file doesn't exists ! " +
                 "Please run npm init first"+
                 "\n\n"
             );
-            return false;
+            generateSuccess = false;
         }
+
+        return generateSuccess;
     }
 };
 
