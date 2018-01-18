@@ -76,7 +76,7 @@ var generator = {
         // print instructions after the initialization
         // but make sure we won't print it during test
         if (process.env.NODE_ENV !== 'test') {
-            console.log(
+            console.log( // eslint-disable-line
                 "Your project folder is now ready !\n" +
                 "Instructions:\n" +
                 "1/ " + installInstruction + "\n" +
@@ -401,7 +401,7 @@ var generator = {
             return true;
         }
         catch (exception) {
-            console.warn(exception);
+            console.warn(exception); // eslint-disable-line
             return false;
         }
     },
@@ -425,7 +425,7 @@ var generator = {
                 packageFileContent = JSON.parse(packageFileContent);
             }
             catch (exception) {
-                console.warn(
+                console.warn( // eslint-disable-line
                     "\n\n" +
                     "Error while parsing package.json file" +
                     "Please check your package.json file for any redundant commas" +
@@ -447,7 +447,7 @@ var generator = {
                 return true;
             }
             catch (exception) {
-                console.warn(
+                console.warn( // eslint-disable-line
                     "\n\n" +
                     "Error while writing to package.json" +
                     "\n\n"
@@ -456,7 +456,7 @@ var generator = {
             }
         }
         catch (exception) {
-            console.warn(
+            console.warn( // eslint-disable-line
                 "\n\n" +
                 "package.json file doesn't exists ! " +
                 "Please run npm init first"+
