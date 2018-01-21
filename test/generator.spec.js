@@ -133,12 +133,12 @@ describe('generator', function() {
             var UniqueImports = AllImports.filter(function(item, index) {
                 return AllImports.indexOf(item) === index;
             });
-            var isUniqe = AllImports.length === UniqueImports.length;
-            if(isUniqe) {
+            var isUnique = AllImports.length === UniqueImports.length;
+            if(isUnique) {
                 assert(true, 'All imports are unique');
             }
             else {
-                assert.fail(isUniqe, true, 'Imports are not unique');
+                assert.fail(isUnique, true, 'Imports are not unique');
             }
         };
 
