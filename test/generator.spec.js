@@ -81,6 +81,38 @@ describe('generator', function() {
         });
     };
 
+    var getConfigWithAllOptions = function() {
+        return Object.seal({
+            'devServer': true,
+            'jsOptions': [
+                "coffee",
+                "jshint",
+                "concat",
+                "babel",
+                "uglify",
+                "browserSync"
+            ],
+            'jsDistSource': 'src/javascript',
+            'jsDistDest': 'dist/javascript',
+            'cssPreProcessorType': 'sass',
+            'cssOptions': [
+                "autoprefixer",
+                "minifyCss",
+                "browserSync",
+                "cssLint"
+            ],
+            'cssDistSource': 'src/css',
+            'cssDistDest': 'dist/css',
+            'otherOptions': [
+                "minifyImage",
+                "cache"
+            ],
+            'imageDistSource': 'src/images',
+            'imageDistDest': 'dist/images',
+            'outputDependencies': false
+        });
+    };
+
     var getCurrentFileContent = function() {
         return fs.readFileSync('gulpfile.js', 'utf8');
     };
