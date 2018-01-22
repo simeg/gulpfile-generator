@@ -57,10 +57,32 @@ var generator = {
 
         content += g.getDefaultTask(totalOptions);
 
-        if (options.outputDependencies)
-            g.generateDependencyFile(totalOptions);
-
-        g.writeToFile('gulpfile.js', content);
+        var installInstruction;
+        var outputDependenciesIsSuccess;
+        if (options.outputDependencies === "toTxtFile") {
+            installInstruction = "copy script in install-dependencies.txt and run it";
+            outputDependenciesIsSuccess = g.generateDependencyFile(totalOptions);
+        }
+        else {
+            installInstruction = "npm run setup";
+            outputDependenciesIsSuccess = g.generateInstallScriptToPackageJson(totalOptions);
+        }
+        if (outputDependenciesIsSuccess) {
+            g.writeToFile('gulpfile.js', content);
+            g.showInstruction(installInstruction);
+        }
+    },
+    showInstruction: function(installInstruction) {
+        // print instructions after the initialization
+        // but make sure we won't print it during test
+        if (process.env.NODE_ENV !== 'test') {
+            console.log( // eslint-disable-line
+                "Your project folder is now ready !\n" +
+                "Instructions:\n" +
+                "1/ " + installInstruction + "\n" +
+                "2/ gulp"
+            );
+        }
     },
     getJsOptions: function(userSelectedOptions) {
         if (userSelectedOptions.jsOptions.length === 0)
@@ -142,8 +164,10 @@ var generator = {
         content += "\nvar CSS_SOURCE = '" + cssOptions.source + "';";
         content += "\nvar CSS_DEST = '" + cssOptions.dest + "';";
 
-        content += "\nvar IMAGE_SOURCE = '" + otherOptions.imageSource + "';";
-        content += "\nvar IMAGE_DEST = '" + otherOptions.imageDest + "';";
+        if (otherOptions.imageSource && otherOptions.imageDest) {
+            content += "\nvar IMAGE_SOURCE = '" + otherOptions.imageSource + "';";
+            content += "\nvar IMAGE_DEST = '" + otherOptions.imageDest + "';";
+        }
 
         if (devServer) {
             content += "\nvar SERVER_BASE_DIR = './';";
@@ -372,7 +396,67 @@ var generator = {
             return dependencies.indexOf(option) === index;
         });
         var npmInstallStr = 'npm install --save-dev ' + uniqueDependencies.join(' ');
-        generator.writeToFile('install-dependencies.txt', npmInstallStr);
+        var generateSuccess = true;
+        try {
+            generator.writeToFile('install-dependencies.txt', npmInstallStr);
+        }
+        catch (exception) {
+            console.warn(exception); // eslint-disable-line
+            generateSuccess = false;
+        }
+        return generateSuccess;
+    },
+    generateInstallScriptToPackageJson: function(options) {
+        var allOptions = defaultModules.concat(options);
+        // Filter out non-valid dependencies
+        var dependencies = allOptions.reduce(function(dependencies, option) {
+            var dependency = generator.getModulePath(option);
+            if (dependency)
+                dependencies.push(dependency);
+
+            return dependencies;
+        }, []);
+        var uniqueDependencies = dependencies.filter(function(option, index) {
+            return dependencies.indexOf(option) === index;
+        });
+        var npmInstallStr = 'npm install --save-dev ' + uniqueDependencies.join(' ');
+        var generateSuccess = true;
+        if (fs.existsSync('package.json')) {
+            var packageFileContent = fs.readFileSync('package.json');
+            try {
+                packageFileContent = JSON.parse(packageFileContent);
+            }
+            catch (exception) {
+                console.warn( // eslint-disable-line
+                    "\n\n" +
+                    "Error while parsing package.json file" +
+                    "Please check your package.json file for any redundant commas" +
+                    "\n\n"
+                );
+                generateSuccess = false;
+            }
+            // 4 white-space for package.json
+            var indentation = 4;
+            // create scripts if not exists
+            if (packageFileContent.scripts === undefined) {
+                packageFileContent.scripts = {};
+            }
+            // append the install script to scripts in package.json
+            packageFileContent.scripts.setup = npmInstallStr;
+            var json = JSON.stringify(packageFileContent, null, indentation);
+            generator.writeToFile('package.json', json);
+        }
+        else {
+            console.warn( // eslint-disable-line
+                "\n\n" +
+                "package.json file doesn't exists ! " +
+                "Please run npm init first"+
+                "\n\n"
+            );
+            generateSuccess = false;
+        }
+
+        return generateSuccess;
     }
 };
 

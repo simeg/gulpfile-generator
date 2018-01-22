@@ -28,7 +28,7 @@ describe('generator', function() {
             'otherOptions': [],
             'imageDistSource': 'src/images',
             'imageDistDest': 'dist/images',
-            'outputDependencies': false
+            'outputDependencies': 'toTxtFile'
         });
     };
 
@@ -45,7 +45,7 @@ describe('generator', function() {
             'otherOptions': ['minifyImage'],
             'imageDistSource': 'src/images',
             'imageDistDest': 'dist/images',
-            'outputDependencies': false
+            'outputDependencies': 'toTxtFile'
         });
     };
 
@@ -77,7 +77,7 @@ describe('generator', function() {
             ],
             'imageDistSource': 'src/images',
             'imageDistDest': 'dist/images',
-            'outputDependencies': false
+            'outputDependencies': 'toTxtFile'
         });
     };
 
@@ -133,12 +133,12 @@ describe('generator', function() {
             var UniqueImports = AllImports.filter(function(item, index) {
                 return AllImports.indexOf(item) === index;
             });
-            var isUniqe = AllImports.length === UniqueImports.length;
-            if(isUniqe) {
+            var isUnique = AllImports.length === UniqueImports.length;
+            if(isUnique) {
                 assert(true, 'All imports are unique');
             }
             else {
-                assert.fail(isUniqe, true, 'Imports are not unique');
+                assert.fail(isUnique, true, 'Imports are not unique');
             }
         };
 
@@ -648,7 +648,7 @@ describe('generator', function() {
 
         it('with no options selected', function() {
             var emptyDependenciesConfig = getEmptyConfig();
-            emptyDependenciesConfig.outputDependencies = true;
+            emptyDependenciesConfig.outputDependencies = 'toTxtFile';
             generator.generateFile(emptyDependenciesConfig);
 
             var actual = fs.readFileSync('install-dependencies.txt', 'utf8');
@@ -660,11 +660,45 @@ describe('generator', function() {
         it('containing selected options', function() {
             var installDependenciesConfig = getEmptyConfig();
             installDependenciesConfig.jsOptions = ['uglify', 'babel', 'jshint'];
-            installDependenciesConfig.outputDependencies = true;
+            installDependenciesConfig.outputDependencies = 'toTxtFile';
             installDependenciesConfig.devServer = true;
             generator.generateFile(installDependenciesConfig);
 
             var actual = fs.readFileSync('install-dependencies.txt', 'utf8');
+
+            var expect = 'npm install --save-dev gulp gulp-plumber gulp-rename gulp-jshint ' +
+                'gulp-babel gulp-uglify browser-sync';
+            assert.equal(actual, expect);
+        });
+    });
+
+    describe('generates install script in package.json', function() {
+        beforeEach(function() {
+            fsMock({
+                'package.json': '{ "name": "test" }'
+            });
+        });
+
+        it('with no options selected', function() {
+            var emptyDependenciesConfig = getEmptyConfig();
+            emptyDependenciesConfig.outputDependencies = 'toPackageFile';
+            generator.generateFile(emptyDependenciesConfig);
+
+            var packageFileContent = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            var actual = packageFileContent.scripts.setup;
+            var expect = 'npm install --save-dev gulp gulp-plumber gulp-rename';
+            assert.equal(actual, expect);
+        });
+
+        it('containing selected options', function() {
+            var installDependenciesConfig = getEmptyConfig();
+            installDependenciesConfig.jsOptions = ['uglify', 'babel', 'jshint'];
+            installDependenciesConfig.outputDependencies = 'toPackageFile';
+            installDependenciesConfig.devServer = true;
+            generator.generateFile(installDependenciesConfig);
+
+            var packageFileContent = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            var actual = packageFileContent.scripts.setup;
 
             var expect = 'npm install --save-dev gulp gulp-plumber gulp-rename gulp-jshint ' +
                 'gulp-babel gulp-uglify browser-sync';
@@ -677,7 +711,8 @@ describe('generator', function() {
             this.sinon.stub(console, 'warn');
 
             fsMock({
-                'gulpfile.js': ''
+                'gulpfile.js': '',
+                'package.json': ''
             });
         });
 
@@ -715,6 +750,20 @@ describe('generator', function() {
             assert(console.warn.calledOnce);
             assert(console.warn.calledWith(
                 'Type [' + type + '] is not a valid custom code option'));
+        });
+
+        it('on incorrect JSON format package.json' , function() {
+            var config = getEmptyConfig();
+            config.outputDependencies = "toPackageFile";
+            generator.generateFile(config);
+
+            assert(console.warn.calledOnce);
+            assert(console.warn.calledWith(
+              "\n\n" +
+              "Error while parsing package.json file" +
+              "Please check your package.json file for any redundant commas" +
+              "\n\n"
+            ));
         });
     });
 
