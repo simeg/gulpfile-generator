@@ -33,7 +33,6 @@ gulp.task('test', ['set-test-env'], function(cb) {
 
     gulp.src('test/**/*.js')
         .pipe(plumber())
-        .pipe(istanbul())
         .pipe(mocha({reporter: 'spec'}))
         .on('error', function(err) {
             mochaErr = err;
