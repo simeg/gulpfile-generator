@@ -334,7 +334,7 @@ var generator = {
         case 'minifyCss':
             return ".pipe(gulp.dest(CSS_DEST + '/'))\n" +
                 "    .pipe(rename({suffix: '.min'}))\n" +
-                "    .pipe(minifycss())";
+                "    .pipe(minifyCss())";
         case 'sass':
             return ".pipe(sass())";
         case 'stylus':
