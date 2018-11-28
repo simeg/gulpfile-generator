@@ -225,6 +225,15 @@ var generator = {
                 i + i + i + i + "generator.emit('end');\n" + i + i + "}}))\n";
         }
 
+        if (type === 'none') {
+            var styleExtension = '.css';
+            preProcessing = i + "gulp.src(CSS_SOURCE + '/**/*" + styleExtension + "')\n" +
+                i + i + ".pipe(plumber({\n" +
+                i + i + i + "errorHandler: function(error) {\n" +
+                i + i + i + i + "console.log(error.message);\n" +
+                i + i + i + i + "generator.emit('end');\n" + i + i + "}}))\n";
+        }
+
         var content = "gulp.task('css', function() {\n" +
             (preProcessing ? preProcessing : '');
 
