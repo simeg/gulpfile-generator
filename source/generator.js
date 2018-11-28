@@ -325,7 +325,7 @@ var generator = {
         case 'browserSync':
             return ".pipe(browserSync.reload({ stream:true }))";
         case 'cssLint':
-            return ".pipe(csslint())\n" +
+            return ".pipe(cssLint())\n" +
                 "    .pipe(csslint.reporter())";
         case 'dest':
             return ".pipe(gulp.dest(CSS_DEST + '/'))";
