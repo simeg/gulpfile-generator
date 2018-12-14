@@ -11,11 +11,9 @@ node_js:
     - "6.10.0"
 sudo: false
 before_script:
-  - npm install -g yarn gulp codecov istanbul
-  - yarn install
+  - make ci-prepare install
 script:
-    - gulp
-    - ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec
+    - make lint coverage
     - codecov
 cache:
   yarn: true
