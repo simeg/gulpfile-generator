@@ -8,7 +8,7 @@ ci-prepare:
 	$(NPM) install -g yarn gulp codecov istanbul
 
 coverage:
-	@NODE_ENV=test $(NPM_BIN)/istanbul cover $(NPM_BIN)/mocha --report lcovonly -- -R spec
+	@NODE_ENV=test $(NPM_BIN)/istanbul cover $(NPM_BIN)/_mocha --report lcovonly -- -R spec
 
 install:
 	@$(YARN)
