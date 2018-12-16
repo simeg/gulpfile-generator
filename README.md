@@ -24,7 +24,6 @@ This will start up an interactive interface where you should follow the instruct
   * **JSHint** using [gulp-jshint](https://github.com/spalger/gulp-jshint)
   * **Compiling CoffeeScript** using [gulp-coffee](https://github.com/contra/gulp-coffee)
   * **Converting ES6 to ES5** using [gulp-babel](https://github.com/babel/gulp-babel)
-  * _More.. (coming soon)_
 * CSS
   * **LESS** using [gulp-less](https://github.com/plus3network/gulp-less)
   * **Sass** using [gulp-sass](https://github.com/dlmanning/gulp-sass)
@@ -32,7 +31,19 @@ This will start up an interactive interface where you should follow the instruct
   * **Lint** using [gulp-csslint](https://github.com/lazd/gulp-csslint)
   * **Autoprefixer** using [gulp-autoprefixer](https://github.com/sindresorhus/gulp-autoprefixer)
   * **Minification** using _gulp-minify-css_ (will be replaced by [gulp-clean-css](https://github.com/scniro/gulp-clean-css))
-  * _More.. (coming soon)_
 * Images
   * **Minification** using [gulp-imagemin](https://github.com/sindresorhus/gulp-imagemin)
-  * _More.. (coming soon)_
+
+## Development
+1. Install dependencies and make CLI available in root
+
+    `make install link`
+
+2. Do code changes
+3. Run generator with
+
+    `./gulpfile-generator`
+
+4. Run tests and linter
+
+    `make test lint`

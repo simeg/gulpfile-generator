@@ -1,4 +1,4 @@
-.PHONY: ci-prepare coverage install lint test
+.PHONY: ci-prepare coverage install lint link test
 
 YARN=$(shell which yarn)
 NPM=$(shell which npm)
@@ -15,6 +15,9 @@ install:
 
 lint:
 	@NODE_ENV=test $(NPM_BIN)/gulp json lint
+
+link:
+	ln -s ./source/cli.js ./gulpfile-generator
 
 test:
 	@$(NPM_BIN)/gulp test
