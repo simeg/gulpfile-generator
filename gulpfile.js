@@ -13,14 +13,14 @@ gulp.task('set-test-env', function(cb) {
     cb();
 });
 
-gulp.task('json', ['set-test-env'], function(cb) {
+gulp.task('lint-json', ['set-test-env'], function(cb) {
     gulp.src(['**/*.json', '!./node_modules/**/*.json'])
         .pipe(jsonlint())
         .pipe(jsonlint.reporter());
     cb();
 });
 
-gulp.task('lint', function() {
+gulp.task('lint', ['lint-json'], function() {
     gulp.src('./**/*.js')
         .pipe(excludeGitignore())
         .pipe(eslint())
@@ -43,4 +43,4 @@ gulp.task('test', ['set-test-env'], function(cb) {
         });
 });
 
-gulp.task('default', ['set-test-env', 'json', 'lint', 'test']);
+gulp.task('default', ['set-test-env', 'lint-json', 'lint', 'test']);

@@ -14,7 +14,7 @@ install:
 	@$(YARN)
 
 lint:
-	@NODE_ENV=test $(NPM_BIN)/gulp json lint
+	@NODE_ENV=test $(NPM_BIN)/gulp lint
 
 link:
 	ln -s ./source/cli.js ./gulpfile-generator
