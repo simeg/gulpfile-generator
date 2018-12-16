@@ -1,8 +1,6 @@
 'use strict';
 
 var gulp = require('gulp');
-var eslint = require('gulp-eslint');
-var excludeGitignore = require('gulp-exclude-gitignore');
 var jsonlint = require('gulp-jsonlint');
 var mocha = require('gulp-mocha');
 var istanbul = require('gulp-istanbul');
@@ -20,14 +18,6 @@ gulp.task('lint-json', ['set-test-env'], function(cb) {
     cb();
 });
 
-gulp.task('lint', ['lint-json'], function() {
-    gulp.src('./**/*.js')
-        .pipe(excludeGitignore())
-        .pipe(eslint())
-        .pipe(eslint.format())
-        .pipe(eslint.failAfterError());
-});
-
 gulp.task('test', ['set-test-env'], function(cb) {
     var mochaErr;
 
@@ -43,4 +33,4 @@ gulp.task('test', ['set-test-env'], function(cb) {
         });
 });
 
-gulp.task('default', ['set-test-env', 'lint-json', 'lint', 'test']);
+gulp.task('default', ['set-test-env', 'lint-json', 'test']);

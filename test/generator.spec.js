@@ -761,7 +761,7 @@ describe('generator', function() {
 
             assert(console.warn.calledOnce);
             assert(console.warn.calledWith(
-              '\n\n' +
+                '\n\n' +
               'Error while parsing package.json file' +
               'Please check your package.json file for any redundant commas' +
               '\n\n'

@@ -14,7 +14,7 @@ install:
 	@$(YARN)
 
 lint:
-	@NODE_ENV=test $(NPM_BIN)/gulp lint
+	@NODE_ENV=test $(NPM_BIN)/eslint .eslintrc --fix --ext .js source test && $(NPM_BIN)/gulp lint-json
 
 link:
 	ln -s ./source/cli.js ./gulpfile-generator
