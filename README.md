@@ -44,6 +44,6 @@ This will start up an interactive interface where you should follow the instruct
 
     `./gulpfile-generator`
 
-4. Run tests and linter
+4. Run linter and tests
 
-    `make test lint`
+    `make lint test`
