@@ -73,14 +73,11 @@ var generator = {
         }
     },
     showInstruction: function(installInstruction) {
-        // print instructions after the initialization
-        // but make sure we won't print it during test
         if (process.env.NODE_ENV !== 'test') {
             console.log( // eslint-disable-line
-                "Your project folder is now ready !\n" +
-                "Instructions:\n" +
-                "1/ " + installInstruction + "\n" +
-                "2/ gulp"
+                "Your project folder is now ready!\n" +
+                "1) " + installInstruction + "\n" +
+                "2) gulp"
             );
         }
     },
