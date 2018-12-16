@@ -27,21 +27,21 @@
     "gulpfile-generator": "source/cli.js"
   },
   "dependencies": {
-    "cli-list": "^0.2.0",
+    "cli-list": "0.2.0",
     "inquirer": "2.0.0"
   },
   "devDependencies": {
     "eslint-plugin-html": "3",
-    "gulp": "^3.9.1",
-    "gulp-eslint": "^3.0.1",
-    "gulp-exclude-gitignore": "^1.0.0",
-    "gulp-istanbul": "^1.1.1",
-    "gulp-jsonlint": "^1.1.2",
-    "gulp-mocha": "^3.0.1",
-    "gulp-plumber": "^1.1.0",
-    "mocha": "^3.1.2",
-    "mocha-sinon": "^1.1.6",
-    "mock-fs": "^4.7.0",
-    "sinon": "^1.17.6"
+    "gulp": "3.9.1",
+    "gulp-eslint": "3.0.1",
+    "gulp-exclude-gitignore": "1.0.0",
+    "gulp-istanbul": "1.1.1",
+    "gulp-jsonlint": "1.1.2",
+    "gulp-mocha": "3.0.1",
+    "gulp-plumber": "1.1.0",
+    "mocha": "3.1.2",
+    "mocha-sinon": "1.1.6",
+    "mock-fs": "4.7.0",
+    "sinon": "1.17.6"
   }
 }
