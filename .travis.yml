@@ -1,21 +1,16 @@
 language: node_js
 os:
     - linux
-    - windows
 node_js:
-    - "4"
-    - "5"
-    # Using `v6.10.2` we will hit this error
-    # https://github.com/substack/node-mkdirp/pull/110
-    # So pin 6.10.0 for now
-    - "6.10.0"
+    - "8"
+    - "9"
+    - "10"
+    - "node"
 sudo: false
 before_script:
-  - npm install -g yarn gulp codecov istanbul
-  - yarn install
+  - make ci-prepare install
 script:
-    - gulp
-    - ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec
+    - make lint coverage
     - codecov
 cache:
   yarn: true

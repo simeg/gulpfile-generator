@@ -1,9 +1,7 @@
 'use strict';
 
 var gulp = require('gulp');
-var eslint = require('gulp-eslint');
-var excludeGitignore = require('gulp-exclude-gitignore');
-var jsonlint = require("gulp-jsonlint");
+var jsonlint = require('gulp-jsonlint');
 var mocha = require('gulp-mocha');
 var istanbul = require('gulp-istanbul');
 var plumber = require('gulp-plumber');
@@ -13,19 +11,11 @@ gulp.task('set-test-env', function(cb) {
     cb();
 });
 
-gulp.task('json', ['set-test-env'], function(cb) {
-    gulp.src(["**/*.json", "!./node_modules/**/*.json"])
+gulp.task('lint-json', ['set-test-env'], function(cb) {
+    gulp.src(['**/*.json', '!./node_modules/**/*.json'])
         .pipe(jsonlint())
         .pipe(jsonlint.reporter());
     cb();
-});
-
-gulp.task('lint', function() {
-    gulp.src('source/*.js')
-        .pipe(excludeGitignore())
-        .pipe(eslint())
-        .pipe(eslint.format())
-        .pipe(eslint.failAfterError());
 });
 
 gulp.task('test', ['set-test-env'], function(cb) {
@@ -43,4 +33,4 @@ gulp.task('test', ['set-test-env'], function(cb) {
         });
 });
 
-gulp.task('default', ['set-test-env', 'json', 'lint', 'test']);
+gulp.task('default', ['set-test-env', 'lint-json', 'test']);

@@ -1,5 +1,4 @@
-/* eslint-disable */ // TODO: REMOVE
-
+/* eslint-disable no-console */
 'use strict';
 
 var assert = require('assert');
@@ -53,27 +52,27 @@ describe('generator', function() {
         return Object.seal({
             'devServer': true,
             'jsOptions': [
-                "coffee",
-                "jshint",
-                "concat",
-                "babel",
-                "uglify",
-                "browserSync"
+                'coffee',
+                'jshint',
+                'concat',
+                'babel',
+                'uglify',
+                'browserSync'
             ],
             'jsDistSource': 'src/javascript',
             'jsDistDest': 'dist/javascript',
             'cssPreProcessorType': 'sass',
             'cssOptions': [
-                "autoprefixer",
-                "minifyCss",
-                "browserSync",
-                "cssLint"
+                'autoprefixer',
+                'minifyCss',
+                'browserSync',
+                'cssLint'
             ],
             'cssDistSource': 'src/css',
             'cssDistDest': 'dist/css',
             'otherOptions': [
-                "minifyImage",
-                "cache"
+                'minifyImage',
+                'cache'
             ],
             'imageDistSource': 'src/images',
             'imageDistDest': 'dist/images',
@@ -134,7 +133,7 @@ describe('generator', function() {
                 return AllImports.indexOf(item) === index;
             });
             var isUnique = AllImports.length === UniqueImports.length;
-            if(isUnique) {
+            if (isUnique) {
                 assert(true, 'All imports are unique');
             }
             else {
@@ -176,7 +175,8 @@ describe('generator', function() {
         };
 
         // TODO: See if this can be written using runTestUsingSingleIndex()
-        var runTestUsingTwoIndexes = function(type, jsObject, cssObject, imageObject) {
+        // eslint-disable-next-line no-unused-vars
+        var runTestUsingTwoIndexes = function(type, jsObject, cssObject, _imageObject) {
             // TODO: Why separate jsObject from cssObject?
             var object = ((jsObject && Object.keys(jsObject).length > 0) ? jsObject : cssObject),
                 firstOption = object.options[object.indexes[0]],
@@ -220,10 +220,10 @@ describe('generator', function() {
 
                 it('generates correct imports', function() {
                     var correctImports = [
-                        "var gulp = require('gulp');",
-                        "var plumber = require('gulp-plumber');",
-                        "var rename = require('gulp-rename');",
-                        "var browserSync = require('browser-sync');"
+                        'var gulp = require(\'gulp\');',
+                        'var plumber = require(\'gulp-plumber\');',
+                        'var rename = require(\'gulp-rename\');',
+                        'var browserSync = require(\'browser-sync\');'
                     ];
                     var currentFileContent = getCurrentFileContent();
                     assertImports(currentFileContent, correctImports);
@@ -231,13 +231,13 @@ describe('generator', function() {
 
                 it('generates correct variables', function() {
                     var correctVariables = [
-                        "var JS_SOURCE = 'src/javascript'",
-                        "var JS_DEST = 'dist/javascript'",
-                        "var JS_OUTPUT_FILE = 'main.js'",
-                        "var SERVER_BASE_DIR = './';",
-                        "var WATCH_FILE_EXTENSIONS = ['*.html'];",
-                        "var IMAGE_SOURCE = 'src/images';",
-                        "var IMAGE_DEST = 'dist/images';"
+                        'var JS_SOURCE = \'src/javascript\'',
+                        'var JS_DEST = \'dist/javascript\'',
+                        'var JS_OUTPUT_FILE = \'main.js\'',
+                        'var SERVER_BASE_DIR = \'./\';',
+                        'var WATCH_FILE_EXTENSIONS = [\'*.html\'];',
+                        'var IMAGE_SOURCE = \'src/images\';',
+                        'var IMAGE_DEST = \'dist/images\';'
                     ];
                     var currentFileContent = getCurrentFileContent();
                     assertVariables(currentFileContent, correctVariables);
@@ -245,13 +245,13 @@ describe('generator', function() {
 
                 it('generates browser-sync task', function() {
                     var taskCodeLines = [
-                        "gulp.task('browser-sync', function() {",
-                        "browserSync({",
-                        "server: {",
-                        "baseDir: SERVER_BASE_DIR",
-                        "}",
-                        "});",
-                        "});"
+                        'gulp.task(\'browser-sync\', function() {',
+                        'browserSync({',
+                        'server: {',
+                        'baseDir: SERVER_BASE_DIR',
+                        '}',
+                        '});',
+                        '});'
                     ];
 
                     var currentFileContent = getCurrentFileContent();
@@ -259,22 +259,23 @@ describe('generator', function() {
                 });
 
                 it('generates correct default task', function() {
-                    var taskDeclaration = "gulp.task('default', ['browser-sync'], function() {";
+                    var taskDeclaration = 'gulp.task(\'default\', [\'browser-sync\'], function() {';
                     var nrOfWatchInTask = 2;
                     var searchTerm = '.watch(';
 
                     var currentFileContent = getCurrentFileContent();
 
-                    assertUniqueStringOccurrences(currentFileContent, taskDeclaration, nrOfWatchInTask, searchTerm);
+                    assertUniqueStringOccurrences(currentFileContent,
+                        taskDeclaration, nrOfWatchInTask, searchTerm);
                 });
             });
 
             it('generates imports', function() {
                 // TODO: Add getDefaultImports()
                 var imports = [
-                    "var gulp = require('gulp');",
-                    "var plumber = require('gulp-plumber');",
-                    "var rename = require('gulp-rename');"
+                    'var gulp = require(\'gulp\');',
+                    'var plumber = require(\'gulp-plumber\');',
+                    'var rename = require(\'gulp-rename\');'
                 ];
                 var currentFileContent = getCurrentFileContent();
                 assertImports(currentFileContent, imports);
@@ -283,30 +284,31 @@ describe('generator', function() {
             it('generates variables', function() {
                 // TODO: Add getDefaultVariables()
                 var variables = [
-                    "var JS_SOURCE = 'src/javascript'",
-                    "var JS_DEST = 'dist/javascript'",
-                    "var JS_OUTPUT_FILE = 'main.js'",
-                    "var CSS_SOURCE = 'src/css';",
-                    "var CSS_DEST = 'dist/css';",
-                    "var IMAGE_SOURCE = 'src/images';",
-                    "var IMAGE_DEST = 'dist/images';"
+                    'var JS_SOURCE = \'src/javascript\'',
+                    'var JS_DEST = \'dist/javascript\'',
+                    'var JS_OUTPUT_FILE = \'main.js\'',
+                    'var CSS_SOURCE = \'src/css\';',
+                    'var CSS_DEST = \'dist/css\';',
+                    'var IMAGE_SOURCE = \'src/images\';',
+                    'var IMAGE_DEST = \'dist/images\';'
                 ];
                 var currentFileContent = getCurrentFileContent();
                 assertVariables(currentFileContent, variables);
             });
 
             it('generates task', function() {
-                var taskDeclaration = "gulp.task('default', function() {";
+                var taskDeclaration = 'gulp.task(\'default\', function() {';
                 var nrOfWatchInTask = 1;
                 var searchTerm = '.watch(';
 
                 var currentFileContent = getCurrentFileContent();
 
-                assertUniqueStringOccurrences(currentFileContent, taskDeclaration, nrOfWatchInTask, searchTerm);
+                assertUniqueStringOccurrences(currentFileContent,
+                    taskDeclaration, nrOfWatchInTask, searchTerm);
             });
 
             it('generates JavaScript task', function() {
-                var taskDeclaration = "gulp.task('javascript', function() {";
+                var taskDeclaration = 'gulp.task(\'javascript\', function() {';
                 var nrOfPipelinesInTask = 2;
 
                 var currentFileContent = getCurrentFileContent();
@@ -331,7 +333,7 @@ describe('generator', function() {
             });
 
             it('generates CSS task', function() {
-                var taskDeclaration = "gulp.task('css', function() {";
+                var taskDeclaration = 'gulp.task(\'css\', function() {';
                 var nrOfPipelinesInTask = 2;
 
                 var currentFileContent = getCurrentFileContent();
@@ -356,7 +358,7 @@ describe('generator', function() {
             });
 
             it('generates image task', function() {
-                var taskDeclaration = "gulp.task('images', function() {";
+                var taskDeclaration = 'gulp.task(\'images\', function() {';
                 var nrOfPipelinesInTask = 2;
 
                 var currentFileContent = getCurrentFileContent();
@@ -380,7 +382,7 @@ describe('generator', function() {
                 assert(true, 'Image task is ok');
             });
         });
-        
+
         describe('with all options', function() {
             beforeEach(function() {
                 var config = getConfigWithAllOptions();
@@ -404,24 +406,24 @@ describe('generator', function() {
             // These two arrays match against index, so jsOptions[0]
             // generates code that's in generatedCode[0] and so on
             var jsOptions = [
-                "coffee",
-                "jshint",
-                "concat",
-                "babel",
-                "uglify",
-                "browserSync"
+                'coffee',
+                'jshint',
+                'concat',
+                'babel',
+                'uglify',
+                'browserSync'
             ];
 
             var generatedCode = [
-                ".pipe(coffee({bare: true}))",
-                ".pipe(jshint())\n" +
-                "    .pipe(jshint.reporter('default'))",
-                ".pipe(concat(JS_OUTPUT_FILE))",
-                ".pipe(babel())",
-                ".pipe(gulp.dest(JS_DEST + '/'))\n" +
-                "    .pipe(rename({suffix: '.min'}))\n" +
-                "    .pipe(uglify())",
-                ".pipe(browserSync.reload({ stream:true }))"
+                '.pipe(coffee({bare: true}))',
+                '.pipe(jshint())\n' +
+                '    .pipe(jshint.reporter(\'default\'))',
+                '.pipe(concat(JS_OUTPUT_FILE))',
+                '.pipe(babel())',
+                '.pipe(gulp.dest(JS_DEST + \'/\'))\n' +
+                '    .pipe(rename({suffix: \'.min\'}))\n' +
+                '    .pipe(uglify())',
+                '.pipe(browserSync.reload({ stream:true }))'
             ];
 
             it('returns empty JS object 0 options selected', function() {
@@ -436,10 +438,10 @@ describe('generator', function() {
 
             describe('using only one option', function() {
                 var jsObject = {
-                        index: null,
-                        options: jsOptions,
-                        generatedCode: generatedCode
-                    };
+                    index: null,
+                    options: jsOptions,
+                    generatedCode: generatedCode
+                };
                 for (var i = 0; i < jsOptions.length; i++) {
                     jsObject.index = i;
                     runTestUsingSingleIndex(type, jsObject);
@@ -448,10 +450,10 @@ describe('generator', function() {
 
             describe('using combination of options', function() {
                 var jsObject = {
-                        indexes: null,
-                        options: jsOptions,
-                        generatedCode: generatedCode
-                    };
+                    indexes: null,
+                    options: jsOptions,
+                    generatedCode: generatedCode
+                };
                 for (var i = 0; i < jsOptions.length; i++) {
                     for (var j = 0; j < jsOptions.length; j++) {
                         if (j === i)
@@ -476,19 +478,19 @@ describe('generator', function() {
             // These two arrays match against index, so cssOptions[0]
             // generates code that's in generatedCode[0] and so on
             var cssOptions = [
-                "autoprefixer",
-                "minifyCss",
-                "browserSync",
-                "cssLint"
+                'autoprefixer',
+                'minifyCss',
+                'browserSync',
+                'cssLint'
             ];
 
             var generatedCode = [
-                ".pipe(autoprefixer('last 2 versions'))",
-                ".pipe(gulp.dest(CSS_DEST + '/'))\n" +
-                "    .pipe(rename({suffix: '.min'}))\n" +
-                "    .pipe(minifycss())",
-                ".pipe(browserSync.reload({ stream:true }))",
-                ".pipe(csslint())"
+                '.pipe(autoprefixer(\'last 2 versions\'))',
+                '.pipe(gulp.dest(CSS_DEST + \'/\'))\n' +
+                '    .pipe(rename({suffix: \'.min\'}))\n' +
+                '    .pipe(minifycss())',
+                '.pipe(browserSync.reload({ stream:true }))',
+                '.pipe(csslint())'
             ];
 
             it('returns empty CSS object when 0 options and no pre processor selected', function() {
@@ -504,10 +506,10 @@ describe('generator', function() {
 
             describe('using only one option', function() {
                 var cssObject = {
-                        index: null,
-                        options: cssOptions,
-                        generatedCode: generatedCode
-                    };
+                    index: null,
+                    options: cssOptions,
+                    generatedCode: generatedCode
+                };
                 for (var i = 0; i < cssOptions.length; i++) {
                     cssObject.index = i;
                     runTestUsingSingleIndex(type, cssObject);
@@ -516,10 +518,10 @@ describe('generator', function() {
 
             describe('using combination of options', function() {
                 var cssObject = {
-                        indexes: null,
-                        options: cssOptions,
-                        generatedCode: generatedCode
-                    };
+                    indexes: null,
+                    options: cssOptions,
+                    generatedCode: generatedCode
+                };
                 // TODO: This currently tests options A and B like
                 // A + B
                 // B + A
@@ -563,15 +565,15 @@ describe('generator', function() {
                 ];
 
                 var generatedCode = [
-                    ".pipe(less())",
-                    ".pipe(sass())",
-                    ".pipe(stylus())"
+                    '.pipe(less())',
+                    '.pipe(sass())',
+                    '.pipe(stylus())'
                 ];
 
                 for (var i = 0; i < preProcessorTypes.length; i++) {
                     var type = preProcessorTypes[i],
                         codeScope = generatedCode[i];
-                    
+
                     runCssPreProcessorTypeTest(type, codeScope);
                 }
 
@@ -580,7 +582,7 @@ describe('generator', function() {
                         result = false,
                         currentFileContent;
                     generateFileWithCssPreProcessorType(type);
-                    
+
                     // Check to see that there's no sign of any pre-processor
                     for (var i = 0; i < generatedCode.length; i++) {
                         var codeSnippet = generatedCode[i];
@@ -611,13 +613,13 @@ describe('generator', function() {
                 // These two arrays match against index, so imageOptions[0]
                 // generates code that's in generatedCode[0] and so on
                 var otherOptions = [
-                    "minifyImage",
-                    "cache"
+                    'minifyImage',
+                    'cache'
                 ];
 
                 var generatedCode = [
-                    "{ optimizationLevel: 3, progressive: true, interlaced: true })))",
-                    ".pipe(cache(imagemin("
+                    '{ optimizationLevel: 3, progressive: true, interlaced: true })))',
+                    '.pipe(cache(imagemin('
                 ];
                 describe('using combination of options', function() {
                     var imageObject = {
@@ -752,17 +754,17 @@ describe('generator', function() {
                 'Type [' + type + '] is not a valid custom code option'));
         });
 
-        it('on incorrect JSON format package.json' , function() {
+        it('on incorrect JSON format package.json', function() {
             var config = getEmptyConfig();
-            config.outputDependencies = "toPackageFile";
+            config.outputDependencies = 'toPackageFile';
             generator.generateFile(config);
 
             assert(console.warn.calledOnce);
             assert(console.warn.calledWith(
-              "\n\n" +
-              "Error while parsing package.json file" +
-              "Please check your package.json file for any redundant commas" +
-              "\n\n"
+                '\n\n' +
+              'Error while parsing package.json file' +
+              'Please check your package.json file for any redundant commas' +
+              '\n\n'
             ));
         });
     });
@@ -780,14 +782,14 @@ describe('generator', function() {
                 'babel', 'uglify', 'browserSync', 'coffee']);
             config.devServer = true;
             generator.generateFile(config);
-            
-            var sortOrder = 
+
+            var sortOrder =
                 Object.freeze(require('./../source/generator.config.json').sortOrders.js);
 
             var prevIndex, currIndex,
                 currentFileContent = fs.readFileSync('gulpfile.js', 'utf8'),
-                startIndex = currentFileContent.indexOf("gulp.task('javascript'"),
-                limitIndex = currentFileContent.indexOf("});", startIndex);
+                startIndex = currentFileContent.indexOf('gulp.task(\'javascript\''),
+                limitIndex = currentFileContent.indexOf('});', startIndex);
             for (var i = 0; i < sortOrder.length; i++) {
                 var moduleName = sortOrder[i];
                 var moduleCode = generator.getJsOptionCode(moduleName);
@@ -825,8 +827,8 @@ describe('generator', function() {
 
             var prevIndex, currIndex,
                 currentFileContent = fs.readFileSync('gulpfile.js', 'utf8'),
-                startIndex = currentFileContent.indexOf("gulp.task('css"),
-                limitIndex = currentFileContent.indexOf("});", startIndex);
+                startIndex = currentFileContent.indexOf('gulp.task(\'css'),
+                limitIndex = currentFileContent.indexOf('});', startIndex);
             for (var i = 0; i < sortOrder.length; i++) {
                 var moduleName = sortOrder[i];
                 var moduleCode = generator.getCssOptionCode(moduleName);

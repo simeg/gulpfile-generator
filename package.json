@@ -1,6 +1,6 @@
 {
   "name": "gulpfile-generator",
-  "version": "1.3.3",
+  "version": "1.4.0",
   "description": "An interactive generator for custom Gulp configurations",
   "author": "Simon Egersand <s.egersand@gmail.com>",
   "license": "MIT",
@@ -26,25 +26,21 @@
   "bin": {
     "gulpfile-generator": "source/cli.js"
   },
-  "scripts": {
-    "test": "NODE_ENV=test gulp"
-  },
   "dependencies": {
-    "cli-list": "^0.2.0",
+    "cli-list": "0.2.0",
     "inquirer": "2.0.0"
   },
   "devDependencies": {
+    "eslint": "5.10.0",
     "eslint-plugin-html": "3",
-    "gulp": "^3.9.1",
-    "gulp-eslint": "^3.0.1",
-    "gulp-exclude-gitignore": "^1.0.0",
-    "gulp-istanbul": "^1.1.1",
-    "gulp-jsonlint": "^1.1.2",
-    "gulp-mocha": "^3.0.1",
-    "gulp-plumber": "^1.1.0",
-    "mocha": "^3.1.2",
-    "mocha-sinon": "^1.1.6",
-    "mock-fs": "^3.12.1",
-    "sinon": "^1.17.6"
+    "gulp": "3.9.1",
+    "gulp-istanbul": "1.1.1",
+    "gulp-jsonlint": "1.1.2",
+    "gulp-mocha": "3.0.1",
+    "gulp-plumber": "1.1.0",
+    "mocha": "3.1.2",
+    "mocha-sinon": "1.1.6",
+    "mock-fs": "4.7.0",
+    "sinon": "1.17.6"
   }
 }
