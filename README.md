@@ -1,4 +1,4 @@
-# gulpfile-generator [![Build Status](https://travis-ci.org/simeg/gulpfile-generator.svg?branch=master)](https://travis-ci.org/simeg/gulpfile-generator) [![codecov](https://codecov.io/gh/simeg/gulpfile-generator/branch/master/graph/badge.svg)](https://codecov.io/gh/simeg/gulpfile-generator)
+# gulpfile-generator [![Build Status](https://github.com/simeg/gulpfile-generator/workflows/CI/badge.svg) [![codecov](https://codecov.io/gh/simeg/gulpfile-generator/branch/master/graph/badge.svg)](https://codecov.io/gh/simeg/gulpfile-generator)
 
 Are you tired of always having to manually set up a `gulpfile.js` for every new project? Me too, that's why I've written this small tool that will generate the `gulpfile.js` for you, based on your needs.  
 
