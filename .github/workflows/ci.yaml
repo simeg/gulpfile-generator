@@ -20,3 +20,6 @@ jobs:
     - run: make ci-prepare install lint coverage
       env:
         CI: true
+    - uses: codecov/codecov-action@v1
+      with:
+        directory: ./coverage
