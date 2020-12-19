@@ -17,8 +17,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: yarn
-    - run: make ci-prepare install lint
-      # TODO: Fix coverage
-      #    - run: make coverage
+    - run: make ci-prepare install lint coverage
       env:
         CI: true
