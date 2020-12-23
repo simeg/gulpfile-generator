@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "cli-list": "0.2.0",
+    "growl": "^1.10.2",
     "inquirer": "2.0.0"
   },
   "devDependencies": {
